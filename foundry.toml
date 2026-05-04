@@ -1,0 +1,13 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+
+[rpc_endpoints]
+rise = "https://testnet.riselabs.xyz"
+fhenix = "https://ethereum-sepolia-rpc.publicnode.com"
+fhenix_arb = "https://sepolia-rollup.arbitrum.io/rpc"
+inco = "https://testnet.inco.org"
+
+[etherscan]
+rise = { key = "placeholder", url = "https://explorer.testnet.riselabs.xyz/api" }
