@@ -1,7 +1,11 @@
 [profile.default]
 src = "src"
 out = "out"
-libs = ["lib"]
+libs = ["lib", "node_modules"]
+remappings = [
+    "@inco/lightning/=node_modules/@inco/lightning/src/",
+    "forge-std/=lib/forge-std/src/"
+]
 
 [rpc_endpoints]
 rise = "https://testnet.riselabs.xyz"
