@@ -7,7 +7,7 @@ libs = ["lib"]
 rise = "https://testnet.riselabs.xyz"
 fhenix = "https://ethereum-sepolia-rpc.publicnode.com"
 fhenix_arb = "https://sepolia-rollup.arbitrum.io/rpc"
-inco = "https://testnet.inco.org"
+inco = "https://sepolia.base.org"
 
 [etherscan]
 rise = { key = "placeholder", url = "https://explorer.testnet.riselabs.xyz/api" }
