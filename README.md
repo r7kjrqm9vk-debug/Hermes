@@ -1,78 +1,88 @@
 # HERMES Protocol
 
-> Performant private DeFi — market making on RISE Chain with confidential vaults on Inco Lightning.
+> Performant private DeFi — market making on RISE Chain with confidential vaults on Inco Lightning and Fhenix CoFHE.
 
 ## Overview
 
 HERMES is a multi-chain DeFi protocol that combines:
-- **High-performance market making** on RISE Chain (1ms latency, parallel EVM)
-- **Confidential vaults** on Inco Lightning (encrypted balances via TEE)
-- **On-chain activity tracking** via HermesTracker
+- **High-performance execution** on RISE Chain (1ms latency, parallel EVM, native orderbook)
+- **Confidential liquidity** on Inco Lightning (encrypted vault positions via TEE)
+- **Encrypted identity** on Fhenix CoFHE (creator score via FHE — zero trust)
 
-The core insight: RISE provides the speed, Inco provides the privacy. Together they enable a new primitive — a market maker where liquidity positions are confidential.
+The core insight: RISE provides the speed, Inco provides operational privacy, Fhenix provides permanent identity guarantees. Three layers, one coherent protocol.
 
 ## Architecture
 
-
-┌─────────────────────────────────────────┐
-│           HERMES Protocol               │
-├─────────────┬───────────────────────────┤
-│ RISE Chain  │ HermesMarket + Tracker    │
-│             │ Permissionless markets    │
-│             │ Native orderbook pattern  │
-├─────────────┼───────────────────────────┤
-│ Inco/Base   │ ConfidentialVault         │
-│ Sepolia     │ Encrypted balances (TEE)  │
-│             │ Private liquidity mgmt    │
-└─────────────┴───────────────────────────┘
-
+┌─────────────────────────────────────────────────┐
+│                HERMES Protocol                  │
+├──────────────┬──────────────┬───────────────────┤
+│  RISE Chain  │  Inco/Base   │  Fhenix/Sepolia   │
+│              │  Sepolia     │                   │
+│ HermesMarket │ Confidential │ Confidential      │
+│ HermesTrack  │ Vault (TEE)  │ Vault (FHE)       │
+│ HermesToken  │ ~1s latency  │ ~5-15s latency    │
+│ HermesFaucet │ Intel TDX    │ LWE lattice       │
+└──────────────┴──────────────┴───────────────────┘
 
 ## Deployed Contracts
 
-### RISE Testnet
+### RISE Testnet (Chain ID: 11155931)
 | Contract | Address |
 |---|---|
-| Counter | `0x95237d9B46Fc528B3adc87B4173d9898f4665824` |
 | HermesMarket | `0x4e0385b56AfA1FA2DBdf3f3b8A09ccEBFe2E75c4` |
 | HermesTracker | `0x584A7eE5421b1066929f3e63D045bA66a0186b86` |
+| HermesToken | `0xe61a27b88c5912C2AD936419A9cA4281B4644189` |
+| HermesFaucet | `0xB10FFD0D5c8d41100F9a47fEB24F4f407768187D` |
+| Counter | `0x95237d9B46Fc528B3adc87B4173d9898f4665824` |
 
 ### Inco Lightning (Base Sepolia)
 | Contract | Address |
 |---|---|
-| Counter | `0x3aF51122a39b876fD2752C5b588B6A5C45A7492d` |
 | ConfidentialVault | `0x772a1A3942fBbdEb06826966CDA3476394f93399` |
+| Counter | `0x3aF51122a39b876fD2752C5b588B6A5C45A7492d` |
 
 ### Fhenix CoFHE (Sepolia)
 | Contract | Address |
 |---|---|
+| ConfidentialVaultFhenix | `0x002E2c0DfFDF29584994c495E77A870dF54d4e64` |
 | Counter | `0x990e8Db53f77E6A3eD84889339a442fA04920392` |
 
 ## Contracts
 
 ### HermesMarket
-Permissionless market registry on RISE Chain. Any address can create a market pair and track its activity. Designed to interact with RISE MarketCore native orderbook.
+Permissionless market registry on RISE Chain. Any address can create a market pair. Integrates with RISE MarketCore native orderbook. 3 markets live: HERMES/USDC, ETH/USDC, RISE/USDC.
 
-### ConfidentialVault
-Privacy-preserving vault built on Inco Lightning TEE. Balances are encrypted — only the depositor can read their own position. Total vault liquidity is public, individual positions are not.
+### HermesToken + HermesFaucet
+ERC-20 token native to HERMES protocol. Faucet drips 1000 HERMES every 24h per wallet. Used for market liquidity and protocol participation.
 
 ### HermesTracker
-On-chain activity logger for the HERMES ecosystem. Records actions, volumes, and market activity with full auditability.
+On-chain activity logger. Records actions, market ids, volumes with full auditability.
 
-## Why RISE + Inco?
+### ConfidentialVault (Inco)
+TEE-based private vault using Inco Lightning. Balances encrypted via Intel TDX enclave. Deposit operations complete in ~800ms–1.2s. Trust model: hardware attestation.
 
-Traditional DeFi has a front-running problem: every order, position, and balance is public before execution. HERMES addresses this by separating concerns:
+### ConfidentialVaultFhenix
+FHE-based private vault using Fhenix CoFHE. Balances encrypted via Fully Homomorphic Encryption — mathematically impossible to read, even by the protocol. Operations complete in ~5–15s. Trust model: LWE lattice cryptography (zero hardware trust).
 
-- **Execution layer** (RISE): ultra-fast, native orderbook, parallel EVM
-- **Privacy layer** (Inco): encrypted state, TEE-verified computation
+## Why RISE + Inco + Fhenix?
 
-A liquidity provider using HERMES can maintain a private vault position on Inco while executing orders at RISE speeds — without ever exposing their strategy on-chain.
+RISE provides 1ms execution that makes TEE and FHE latency acceptable in production. Inco handles operational data (vault positions) with ~1s TEE latency. Fhenix handles permanent data (creator scores, identity) with mathematical guarantees no hardware can provide.
+
+Full technical analysis: [article.md](./article.md)
+
+## Frontend
+
+Live at: **[VERCEL_LINK]**
+
+Connect MetaMask → claim HERMES from faucet → create markets on RISE → deposit into confidential vaults.
 
 ## Stack
 - Solidity `^0.8.24`
 - Foundry 1.6.0
 - Inco Lightning SDK `@inco/lightning`
-- RISE Chain Testnet
-- Fhenix CoFHE (Sepolia)
+- Fhenix CoFHE `@fhenixprotocol/cofhe-contracts`
+- Vanilla HTML/JS frontend (zero framework dependencies)
 
 ## Author
-Built by `0xE8e8272b7574F5248eDDF28aAf882dB89474af6c` as part of the HERMES multi-chain DeFi experiment.
+`0xE8e8272b7574F5248eDDF28aAf882dB89474af6c`
+Built as part of the HERMES multi-chain DeFi experiment.
