@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HERMES — Performant Private DeFi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --rise: #2db369;
+    --inco: #1A6FDB;
+    --fhenix: #00BCD4;
+    --bg: #080c0a;
+    --bg2: #0d1510;
+    --bg3: #111a14;
+    --border: #1a2e20;
+    --text: #e8f4ee;
+    --text2: #7a9e85;
+    --text3: #3a5e45;
+    --mono: 'Space Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Glow blobs */
+  .blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.07;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .blob-rise { width: 600px; height: 600px; background: var(--rise); top: -200px; left: -100px; }
+  .blob-inco { width: 400px; height: 400px; background: var(--inco); bottom: 100px; right: -100px; }
+  .blob-fhenix { width: 300px; height: 300px; background: var(--fhenix); top: 50%; left: 50%; transform: translate(-50%,-50%); }
+
+  /* Layout */
+  .wrapper { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  /* Header */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(8,12,10,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 0;
+  }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--sans);
+    font-weight: 800;
+    font-size: 20px;
+    letter-spacing: 4px;
+    color: var(--text);
+  }
+  .logo-caduceus {
+    width: 28px;
+    height: 28px;
+  }
+  .logo-sub {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text3);
+    letter-spacing: 2px;
+    font-weight: 400;
+    margin-left: 2px;
+  }
+
+  .connect-btn {
+    background: transparent;
+    border: 1px solid var(--rise);
+    color: var(--rise);
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 8px 20px;
+    cursor: pointer;
+    letter-spacing: 2px;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .connect-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--rise);
+    transform: translateX(-100%);
+    transition: transform 0.2s;
+    z-index: -1;
+  }
+  .connect-btn:hover { color: var(--bg); }
+  .connect-btn:hover::before { transform: translateX(0); }
+  .connect-btn.connected { border-color: var(--rise); color: var(--rise); }
+
+  /* Hero */
+  .hero {
+    padding: 80px 0 48px;
+    text-align: center;
+  }
+  .hero-tag {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--rise);
+    border: 1px solid var(--rise);
+    padding: 4px 12px;
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.2s forwards;
+  }
+  .hero h1 {
+    font-family: var(--sans);
+    font-size: clamp(36px, 7vw, 72px);
+    font-weight: 800;
+    letter-spacing: -2px;
+    line-height: 1;
+    margin-bottom: 16px;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.4s forwards;
+  }
+  .hero h1 span { color: var(--rise); }
+  .hero-sub {
+    font-size: 12px;
+    color: var(--text2);
+    letter-spacing: 2px;
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.6s forwards;
+  }
+
+  /* Layers bar */
+  .layers {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    margin-bottom: 64px;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.8s forwards;
+  }
+  .layer {
+    flex: 1;
+    padding: 16px 20px;
+    border-right: 1px solid var(--border);
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .layer:last-child { border-right: none; }
+  .layer:hover { background: var(--bg2); }
+  .layer-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    margin-bottom: 8px;
+  }
+  .layer-name {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .layer-desc { font-size: 9px; color: var(--text2); letter-spacing: 1px; }
+
+  /* Tab nav */
+  .tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+  }
+  .tab {
+    padding: 12px 28px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--text3);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+  }
+  .tab:hover { color: var(--text2); }
+  .tab.active { color: var(--rise); border-bottom-color: var(--rise); }
+
+  /* Cards */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .card-title {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+  .card-badge {
+    font-size: 9px;
+    letter-spacing: 2px;
+    padding: 3px 8px;
+    border: 1px solid;
+  }
+
+  /* Stats grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-bottom: 40px;
+  }
+  .stat {
+    background: var(--bg2);
+    padding: 20px 24px;
+  }
+  .stat-val {
+    font-family: var(--sans);
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--rise);
+    margin-bottom: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-lbl { font-size: 9px; color: var(--text3); letter-spacing: 2px; }
+
+  /* Market list */
+  .market-row {
+    display: flex;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 16px;
+    font-size: 12px;
+  }
+  .market-row:last-child { border-bottom: none; }
+  .market-id { color: var(--text3); width: 24px; font-size: 10px; }
+  .market-pair {
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 13px;
+    flex: 1;
+  }
+  .market-creator { color: var(--text3); font-size: 10px; }
+  .market-active {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--rise);
+    box-shadow: 0 0 8px var(--rise);
+    flex-shrink: 0;
+  }
+
+  /* Vault comparison */
+  .vault-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .vault-card {
+    border: 1px solid;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .vault-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+  .vault-inco { border-color: rgba(26,111,219,0.3); }
+  .vault-inco::before { background: var(--inco); }
+  .vault-fhenix { border-color: rgba(0,188,212,0.3); }
+  .vault-fhenix::before { background: var(--fhenix); }
+
+  .vault-type {
+    font-size: 9px;
+    letter-spacing: 3px;
+    margin-bottom: 4px;
+  }
+  .vault-name {
+    font-family: var(--sans);
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+  .vault-balance {
+    font-family: var(--sans);
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .vault-balance-sub {
+    font-size: 9px;
+    color: var(--text3);
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+  }
+  .vault-latency {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    margin-bottom: 20px;
+  }
+  .latency-bar {
+    height: 3px;
+    border-radius: 2px;
+    background: var(--border);
+    flex: 1;
+    overflow: hidden;
+  }
+  .latency-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 1s ease;
+  }
+
+  /* Inputs & buttons */
+  .input-group { margin-bottom: 12px; }
+  .input-label { font-size: 9px; letter-spacing: 2px; color: var(--text3); margin-bottom: 6px; }
+  input[type="text"], input[type="number"] {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 10px 12px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input:focus { border-color: var(--rise); }
+
+  .btn {
+    width: 100%;
+    padding: 12px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid;
+  }
+  .btn-rise { background: transparent; border-color: var(--rise); color: var(--rise); }
+  .btn-rise:hover { background: var(--rise); color: var(--bg); }
+  .btn-inco { background: transparent; border-color: var(--inco); color: var(--inco); }
+  .btn-inco:hover { background: var(--inco); color: white; }
+  .btn-fhenix { background: transparent; border-color: var(--fhenix); color: var(--fhenix); }
+  .btn-fhenix:hover { background: var(--fhenix); color: var(--bg); }
+  .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  /* Activity feed */
+  .activity-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+  }
+  .activity-row:last-child { border-bottom: none; }
+  .activity-type {
+    font-size: 9px;
+    letter-spacing: 1px;
+    padding: 2px 6px;
+    border: 1px solid;
+    white-space: nowrap;
+  }
+  .activity-market { color: var(--text2); flex: 1; }
+  .activity-time { color: var(--text3); font-size: 9px; white-space: nowrap; }
+
+  /* Spinner */
+  .spinner {
+    display: inline-block;
+    width: 12px; height: 12px;
+    border: 1px solid var(--border);
+    border-top-color: var(--rise);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--bg2);
+    border: 1px solid var(--rise);
+    padding: 12px 20px;
+    font-size: 11px;
+    color: var(--rise);
+    letter-spacing: 1px;
+    z-index: 1000;
+    transform: translateY(80px);
+    transition: transform 0.3s;
+  }
+  .toast.show { transform: translateY(0); }
+
+  /* Wallet notice */
+  .wallet-notice {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text3);
+    font-size: 11px;
+    letter-spacing: 2px;
+    border: 1px dashed var(--border);
+  }
+
+  /* Section title */
+  .section-title {
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--text3);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 0;
+    margin-top: 80px;
+  }
+  .footer-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+    font-size: 10px;
+    color: var(--text3);
+    letter-spacing: 1px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .footer-contracts { display: flex; flex-direction: column; gap: 4px; }
+  .footer-link { color: var(--text3); text-decoration: none; }
+  .footer-link:hover { color: var(--rise); }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .pulse { animation: pulse 2s infinite; }
+
+  /* Tab panels */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .vault-grid { grid-template-columns: 1fr; }
+    .stats-grid { grid-template-columns: 1fr; }
+    .layers { flex-direction: column; }
+    .hero h1 { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="blob blob-rise"></div>
+<div class="blob blob-inco"></div>
+<div class="blob blob-fhenix"></div>
+
+<!-- Header -->
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <svg class="logo-caduceus" viewBox="0 0 28 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="14" cy="5" r="4" fill="#2db369"/>
+        <rect x="12.5" y="8" width="3" height="20" rx="1.5" fill="#2db369"/>
+        <path d="M14 10 C10 11, 7 14, 7 17 C7 20, 10 21, 12 22 C14 23, 15 24, 14.5 26" stroke="#1A6FDB" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <path d="M14 10 C18 11, 21 14, 21 17 C21 20, 18 21, 16 22 C14 23, 13 24, 13.5 26" stroke="#00BCD4" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <ellipse cx="8.5" cy="16.5" rx="3" ry="2" fill="#1A6FDB" transform="rotate(-10 8.5 16.5)"/>
+        <ellipse cx="19.5" cy="16.5" rx="3" ry="2" fill="#00BCD4" transform="rotate(10 19.5 16.5)"/>
+        <path d="M4 9 C8 7, 11 8, 13.5 10" stroke="#2db369" stroke-width="1.5" fill="none"/>
+        <path d="M24 9 C20 7, 17 8, 14.5 10" stroke="#2db369" stroke-width="1.5" fill="none"/>
+      </svg>
+      <div>
+        HERMES
+        <div class="logo-sub">PERFORMANT PRIVATE DEFI</div>
+      </div>
+    </div>
+    <button class="connect-btn" id="connectBtn" onclick="connectWallet()">
+      CONNECT WALLET
+    </button>
+  </div>
+</header>
+
+<!-- Main -->
+<main>
+  <div class="wrapper">
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-tag">TESTNET LIVE</div>
+      <h1>Market making<br><span>without exposure</span></h1>
+      <p class="hero-sub">RISE · /// INCO · * FHENIX</p>
+
+      <!-- Layer strip -->
+      <div class="layers">
+        <div class="layer" onclick="switchTab('markets')">
+          <div class="layer-dot" style="background:var(--rise)"></div>
+          <div class="layer-name" style="color:var(--rise)">RISE</div>
+          <div class="layer-desc">EXECUTION · 1MS</div>
+        </div>
+        <div class="layer" onclick="switchTab('vault')">
+          <div class="layer-dot" style="background:var(--inco)"></div>
+          <div class="layer-name" style="color:var(--inco)">/// INCO</div>
+          <div class="layer-desc">LIQUIDITY · TEE</div>
+        </div>
+        <div class="layer" onclick="switchTab('vault')">
+          <div class="layer-dot" style="background:var(--fhenix)"></div>
+          <div class="layer-name" style="color:var(--fhenix)">* FHENIX</div>
+          <div class="layer-desc">IDENTITY · FHE</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats -->
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat">
+        <div class="stat-val" id="statMarkets">—</div>
+        <div class="stat-lbl">ACTIVE MARKETS</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val" id="statActions">—</div>
+        <div class="stat-lbl">TOTAL ACTIONS</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val" id="statHermes">—</div>
+        <div class="stat-lbl">HERMES CLAIMED</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" id="tab-markets" onclick="switchTab('markets')">MARKETS</button>
+      <button class="tab" id="tab-vault" onclick="switchTab('vault')">VAULT</button>
+      <button class="tab" id="tab-faucet" onclick="switchTab('faucet')">FAUCET</button>
+      <button class="tab" id="tab-stats" onclick="switchTab('stats')">ACTIVITY</button>
+    </div>
+
+    <!-- MARKETS -->
+    <div class="tab-panel active" id="panel-markets">
+      <div class="section-title">LIVE MARKETS ON RISE CHAIN</div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">HermesMarket</span>
+          <span class="card-badge" style="border-color:var(--rise);color:var(--rise)">RISE TESTNET</span>
+        </div>
+        <div id="marketList">
+          <div class="market-row">
+            <span class="market-id">#0</span>
+            <span class="market-pair">HERMES / USDC</span>
+            <span class="market-creator">0xE8e8...af6c</span>
+            <span class="market-active"></span>
+          </div>
+          <div class="market-row">
+            <span class="market-id">#1</span>
+            <span class="market-pair">ETH / USDC</span>
+            <span class="market-creator">0xE8e8...af6c</span>
+            <span class="market-active"></span>
+          </div>
+          <div class="market-row">
+            <span class="market-id">#2</span>
+            <span class="market-pair">RISE / USDC</span>
+            <span class="market-creator">0xE8e8...af6c</span>
+            <span class="market-active"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">CREATE MARKET</span>
+          <span class="card-badge" style="border-color:var(--text3);color:var(--text3)">PERMISSIONLESS</span>
+        </div>
+        <div class="input-group">
+          <div class="input-label">BASE ASSET</div>
+          <input type="text" id="baseAsset" placeholder="e.g. BTC">
+        </div>
+        <div class="input-group">
+          <div class="input-label">QUOTE ASSET</div>
+          <input type="text" id="quoteAsset" placeholder="e.g. USDC">
+        </div>
+        <button class="btn btn-rise" id="createMarketBtn" onclick="createMarket()" style="margin-top:8px">
+          CREATE MARKET ON RISE
+        </button>
+      </div>
+    </div>
+
+    <!-- VAULT -->
+    <div class="tab-panel" id="panel-vault">
+      <div class="section-title">CONFIDENTIAL VAULTS — PRIVACY COMPARISON</div>
+      <div class="vault-grid">
+
+        <!-- Inco Vault -->
+        <div class="vault-card vault-inco">
+          <div class="vault-type" style="color:var(--inco)">/// INCO LIGHTNING</div>
+          <div class="vault-name">TEE Vault</div>
+          <div class="vault-balance" style="color:var(--inco)" id="incoBalance">???</div>
+          <div class="vault-balance-sub">YOUR BALANCE (ENCRYPTED)</div>
+          <div class="vault-latency">
+            <span style="font-size:9px;color:var(--text3)">LATENCY</span>
+            <div class="latency-bar">
+              <div class="latency-fill" style="width:8%;background:var(--inco)"></div>
+            </div>
+            <span style="color:var(--inco);font-size:9px">~1s</span>
+          </div>
+          <div class="input-group">
+            <div class="input-label">AMOUNT (ETH)</div>
+            <input type="number" id="incoAmount" placeholder="0.001" step="0.001">
+          </div>
+          <button class="btn btn-inco" onclick="depositInco()">DEPOSIT — TEE ENCRYPTED</button>
+          <div style="margin-top:8px;font-size:9px;color:var(--text3);letter-spacing:1px">
+            Intel TDX · hardware attestation · ~800ms
+          </div>
+        </div>
+
+        <!-- Fhenix Vault -->
+        <div class="vault-card vault-fhenix">
+          <div class="vault-type" style="color:var(--fhenix)">* FHENIX COFHE</div>
+          <div class="vault-name">FHE Vault</div>
+          <div class="vault-balance" style="color:var(--fhenix)" id="fhenixBalance">???</div>
+          <div class="vault-balance-sub">YOUR BALANCE (ENCRYPTED)</div>
+          <div class="vault-latency">
+            <span style="font-size:9px;color:var(--text3)">LATENCY</span>
+            <div class="latency-bar">
+              <div class="latency-fill" style="width:60%;background:var(--fhenix)"></div>
+            </div>
+            <span style="color:var(--fhenix);font-size:9px">~15s</span>
+          </div>
+          <div class="input-group">
+            <div class="input-label">AMOUNT (ETH)</div>
+            <input type="number" id="fhenixAmount" placeholder="0.001" step="0.001">
+          </div>
+          <button class="btn btn-fhenix" onclick="depositFhenix()">DEPOSIT — FHE ENCRYPTED</button>
+          <div style="margin-top:8px;font-size:9px;color:var(--text3);letter-spacing:1px">
+            LWE lattice · zero trust · ~5–15s
+          </div>
+        </div>
+
+      </div>
+
+      <div style="margin-top:16px;padding:16px;border:1px solid var(--border);font-size:10px;color:var(--text3);letter-spacing:1px;line-height:1.8">
+        Both vaults hide your position from all external observers. The difference: Inco trusts Intel hardware.
+        Fhenix trusts only mathematics. Same interface — different guarantees.
+      </div>
+    </div>
+
+    <!-- FAUCET -->
+    <div class="tab-panel" id="panel-faucet">
+      <div class="section-title">HERMES TOKEN FAUCET — RISE CHAIN</div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">CLAIM HERMES</span>
+          <span class="card-badge" style="border-color:var(--rise);color:var(--rise)">1000 HERMES / 24H</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+          <div>
+            <div class="stat-lbl" style="margin-bottom:4px">YOUR BALANCE</div>
+            <div style="font-family:var(--sans);font-size:24px;font-weight:700;color:var(--rise)" id="hermesBalance">— HERMES</div>
+          </div>
+          <div>
+            <div class="stat-lbl" style="margin-bottom:4px">NEXT CLAIM</div>
+            <div style="font-family:var(--sans);font-size:16px;font-weight:600;color:var(--text2)" id="nextClaim">—</div>
+          </div>
+        </div>
+        <button class="btn btn-rise" id="claimBtn" onclick="claimHermes()">
+          CLAIM 1000 HERMES
+        </button>
+        <div style="margin-top:12px;font-size:9px;color:var(--text3);letter-spacing:1px">
+          Contract: 0xB10FFD0D5c8d41100F9a47fEB24F4f407768187D · RISE TESTNET
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">TOKEN INFO</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:11px">
+          <div>
+            <div class="stat-lbl">NAME</div>
+            <div style="margin-top:4px">Hermes Token</div>
+          </div>
+          <div>
+            <div class="stat-lbl">SYMBOL</div>
+            <div style="margin-top:4px;color:var(--rise)">HERMES</div>
+          </div>
+          <div>
+            <div class="stat-lbl">DECIMALS</div>
+            <div style="margin-top:4px">18</div>
+          </div>
+          <div>
+            <div class="stat-lbl">DRIP</div>
+            <div style="margin-top:4px">1,000 / 24h</div>
+          </div>
+          <div style="grid-column:1/-1">
+            <div class="stat-lbl">CONTRACT</div>
+            <div style="margin-top:4px;font-size:10px;color:var(--text2)">0xe61a27b88c5912C2AD936419A9cA4281B4644189</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTIVITY -->
+    <div class="tab-panel" id="panel-stats">
+      <div class="section-title">ON-CHAIN ACTIVITY — HERMESTTRACKER</div>
+      <div class="stats-grid" style="margin-bottom:24px">
+        <div class="stat">
+          <div class="stat-val" id="totalActions2">—</div>
+          <div class="stat-lbl">TOTAL ACTIONS</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val" id="totalVolume">—</div>
+          <div class="stat-lbl">TOTAL VOLUME</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val pulse" style="color:var(--rise);font-size:14px">LIVE</div>
+          <div class="stat-lbl">NETWORK STATUS</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">RECENT ACTIVITY</span>
+          <span class="card-badge" style="border-color:var(--rise);color:var(--rise)">RISE TESTNET</span>
+        </div>
+        <div id="activityFeed">
+          <div class="activity-row">
+            <span class="activity-type" style="border-color:var(--rise);color:var(--rise)">createMarket</span>
+            <span class="activity-market">Market #0 · HERMES/USDC</span>
+            <span class="activity-time">block 43020108</span>
+          </div>
+          <div class="activity-row">
+            <span class="activity-type" style="border-color:var(--rise);color:var(--rise)">createMarket</span>
+            <span class="activity-market">Market #1 · ETH/USDC</span>
+            <span class="activity-time">block 43020109</span>
+          </div>
+          <div class="activity-row">
+            <span class="activity-type" style="border-color:var(--rise);color:var(--rise)">createMarket</span>
+            <span class="activity-market">Market #2 · RISE/USDC</span>
+            <span class="activity-time">block 43020110</span>
+          </div>
+          <div class="activity-row">
+            <span class="activity-type" style="border-color:var(--inco);color:var(--inco)">deposit</span>
+            <span class="activity-market">Market #0 · 5000 units</span>
+            <span class="activity-time">block 43020120</span>
+          </div>
+          <div class="activity-row">
+            <span class="activity-type" style="border-color:var(--fhenix);color:var(--fhenix)">trade</span>
+            <span class="activity-market">Market #1 · 2500 units</span>
+            <span class="activity-time">block 43020121</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div style="font-family:var(--sans);font-weight:700;letter-spacing:3px;margin-bottom:8px">HERMES</div>
+      <div style="font-size:9px">RISE · /// INCO · * FHENIX</div>
+    </div>
+    <div class="footer-contracts">
+      <div>HermesMarket · <span style="color:var(--text2)">0x4e0385b56AfA1FA2DBdf3f3b8A09ccEBFe2E75c4</span></div>
+      <div>HermesToken · <span style="color:var(--text2)">0xe61a27b88c5912C2AD936419A9cA4281B4644189</span></div>
+      <div>ConfidentialVault Inco · <span style="color:var(--text2)">0x772a1A3942fBbdEb06826966CDA3476394f93399</span></div>
+      <div>ConfidentialVault Fhenix · <span style="color:var(--text2)">0x002E2c0DfFDF29584994c495E77A870dF54d4e64</span></div>
+    </div>
+    <div style="text-align:right">
+      <a href="https://github.com/r7kjrqm-debug/Hermes" class="footer-link" target="_blank">GITHUB →</a>
+    </div>
+  </div>
+</footer>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // ===== STATE =====
+  let walletConnected = false;
+  let walletAddress = null;
+
+  // ===== CONTRACT ADDRESSES =====
+  const CONTRACTS = {
+    hermesMarket: '0x4e0385b56AfA1FA2DBdf3f3b8A09ccEBFe2E75c4',
+    hermesTracker: '0x584A7eE5421b1066929f3e63D045bA66a0186b86',
+    hermesToken: '0xe61a27b88c5912C2AD936419A9cA4281B4644189',
+    hermesFaucet: '0xB10FFD0D5c8d41100F9a47fEB24F4f407768187D',
+    confidentialVaultInco: '0x772a1A3942fBbdEb06826966CDA3476394f93399',
+    confidentialVaultFhenix: '0x002E2c0DfFDF29584994c495E77A870dF54d4e64',
+  };
+
+  const RISE_CHAIN = {
+    chainId: '0xAA36FB',
+    chainName: 'RISE Testnet',
+    nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+    rpcUrls: ['https://testnet.riselabs.xyz'],
+    blockExplorerUrls: ['https://explorer.testnet.riselabs.xyz'],
+  };
+
+  // ===== WALLET =====
+  async function connectWallet() {
+    if (!window.ethereum) {
+      showToast('MetaMask not found. Install it first.');
+      return;
+    }
+    try {
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      walletAddress = accounts[0];
+      walletConnected = true;
+      const btn = document.getElementById('connectBtn');
+      btn.textContent = walletAddress.slice(0,6) + '...' + walletAddress.slice(-4);
+      btn.classList.add('connected');
+      showToast('Wallet connected ✓');
+      await switchToRise();
+      loadStats();
+    } catch (e) {
+      showToast('Connection rejected.');
+    }
+  }
+
+  async function switchToRise() {
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: RISE_CHAIN.chainId }],
+      });
+    } catch (e) {
+      if (e.code === 4902) {
+        await window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [RISE_CHAIN],
+        });
+      }
+    }
+  }
+
+  // ===== RPC HELPERS =====
+  async function rpcCall(rpcUrl, method, params) {
+    const res = await fetch(rpcUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params }),
+    });
+    const json = await res.json();
+    return json.result;
+  }
+
+  function encodeCall(signature, ...args) {
+    // Simple ABI encoder for common types
+    const sig = signature.slice(0, signature.indexOf('('));
+    // keccak4 of signature — precomputed for our functions
+    const selectors = {
+      'marketCount': '0x3e4a70d5',
+      'getStats': '0x3a4b6e54',
+      'totalSupply': '0x18160ddd',
+      'balanceOf': '0x70a08231',
+      'canClaim': '0x9502d290',
+      'nextClaimTime': '0x34b96a4e',
+      'recordCount': '0x92f8e0f1',
+    };
+    return selectors[sig] || '0x';
+  }
+
+  // ===== STATS =====
+  async function loadStats() {
+    try {
+      const rpc = 'https://testnet.riselabs.xyz';
+
+      // Market count
+      const mcRes = await rpcCall(rpc, 'eth_call', [{
+        to: CONTRACTS.hermesMarket,
+        data: '0x3e4a70d5' // marketCount()
+      }, 'latest']);
+      const marketCount = mcRes ? parseInt(mcRes, 16) : 3;
+      document.getElementById('statMarkets').textContent = marketCount;
+
+      // Tracker actions
+      const taRes = await rpcCall(rpc, 'eth_call', [{
+        to: CONTRACTS.hermesTracker,
+        data: '0x4af2f9b8' // totalActions()
+      }, 'latest']);
+      const totalActions = taRes ? parseInt(taRes, 16) : 3;
+      document.getElementById('statActions').textContent = totalActions;
+      document.getElementById('totalActions2').textContent = totalActions;
+
+      // Total supply HERMES
+      const tsRes = await rpcCall(rpc, 'eth_call', [{
+        to: CONTRACTS.hermesToken,
+        data: '0x18160ddd' // totalSupply()
+      }, 'latest']);
+      const supply = tsRes ? (BigInt(tsRes) / BigInt('1000000000000000000')).toString() : '1000';
+      document.getElementById('statHermes').textContent = Number(supply).toLocaleString();
+
+      if (walletAddress) {
+        loadWalletData();
+      }
+    } catch(e) {
+      console.log('Stats load error:', e);
+    }
+  }
+
+  async function loadWalletData() {
+    try {
+      const rpc = 'https://testnet.riselabs.xyz';
+      const addr = walletAddress.slice(2).padStart(64, '0');
+
+      // HERMES balance
+      const balRes = await rpcCall(rpc, 'eth_call', [{
+        to: CONTRACTS.hermesToken,
+        data: '0x70a08231' + addr // balanceOf(address)
+      }, 'latest']);
+      const bal = balRes ? (BigInt(balRes) / BigInt('1000000000000000000')).toString() : '0';
+      document.getElementById('hermesBalance').textContent = Number(bal).toLocaleString() + ' HERMES';
+
+      // Next claim time
+      const ncRes = await rpcCall(rpc, 'eth_call', [{
+        to: CONTRACTS.hermesFaucet,
+        data: '0x34b96a4e' + addr // nextClaimTime(address)
+      }, 'latest']);
+      if (ncRes) {
+        const ts = parseInt(ncRes, 16);
+        const now = Math.floor(Date.now() / 1000);
+        if (ts <= now) {
+          document.getElementById('nextClaim').textContent = 'AVAILABLE NOW';
+          document.getElementById('claimBtn').disabled = false;
+        } else {
+          const diff = ts - now;
+          const h = Math.floor(diff / 3600);
+          const m = Math.floor((diff % 3600) / 60);
+          document.getElementById('nextClaim').textContent = `${h}h ${m}m`;
+        }
+      }
+    } catch(e) {
+      console.log('Wallet data error:', e);
+    }
+  }
+
+  // ===== ACTIONS =====
+  async function sendTx(to, data, value = '0x0') {
+    if (!walletConnected) { showToast('Connect wallet first'); return null; }
+    try {
+      const txHash = await window.ethereum.request({
+        method: 'eth_sendTransaction',
+        params: [{ from: walletAddress, to, data, value, gas: '0x30000' }],
+      });
+      return txHash;
+    } catch(e) {
+      showToast('Transaction rejected.');
+      return null;
+    }
+  }
+
+  async function createMarket() {
+    const base = document.getElementById('baseAsset').value.trim();
+    const quote = document.getElementById('quoteAsset').value.trim();
+    if (!base || !quote) { showToast('Fill both fields'); return; }
+
+    const btn = document.getElementById('createMarketBtn');
+    btn.innerHTML = '<span class="spinner"></span>CREATING...';
+    btn.disabled = true;
+
+    // ABI encode createMarket(string,string)
+    const selector = '0x6818a3e1';
+    const baseHex = stringToAbiEncoded(base);
+    const quoteHex = stringToAbiEncoded(quote);
+    const offset1 = '0000000000000000000000000000000000000000000000000000000000000040';
+    const offset2 = (64 + 32 + Math.ceil(base.length / 32) * 32).toString(16).padStart(64, '0');
+    const data = selector + offset1 + offset2 + baseHex + quoteHex;
+
+    const tx = await sendTx(CONTRACTS.hermesMarket, data);
+    if (tx) {
+      showToast(`Market ${base}/${quote} created!`);
+      document.getElementById('baseAsset').value = '';
+      document.getElementById('quoteAsset').value = '';
+      setTimeout(loadStats, 3000);
+    }
+    btn.innerHTML = 'CREATE MARKET ON RISE';
+    btn.disabled = false;
+  }
+
+  async function claimHermes() {
+    const btn = document.getElementById('claimBtn');
+    btn.innerHTML = '<span class="spinner"></span>CLAIMING...';
+    btn.disabled = true;
+
+    const tx = await sendTx(CONTRACTS.hermesFaucet, '0x4e71d92d'); // claim()
+    if (tx) {
+      showToast('1000 HERMES claimed! ✓');
+      setTimeout(() => { loadStats(); loadWalletData(); }, 3000);
+    }
+    btn.innerHTML = 'CLAIM 1000 HERMES';
+  }
+
+  async function depositInco() {
+    showToast('Inco deposit requires cofhejs client SDK — coming with full frontend');
+  }
+
+  async function depositFhenix() {
+    showToast('Fhenix deposit requires cofhejs client SDK — coming with full frontend');
+  }
+
+  // ===== HELPERS =====
+  function stringToAbiEncoded(str) {
+    const len = str.length.toString(16).padStart(64, '0');
+    let hex = '';
+    for (let i = 0; i < str.length; i++) {
+      hex += str.charCodeAt(i).toString(16).padStart(2, '0');
+    }
+    hex = hex.padEnd(Math.ceil(str.length / 32) * 64, '0');
+    return len + hex;
+  }
+
+  function switchTab(name) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    document.getElementById('panel-' + name).classList.add('active');
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // Auto-load stats on page load
+  loadStats();
+
+  // Poll every 30s
+  setInterval(loadStats, 30000);
+</script>
+</body>
+</html>
