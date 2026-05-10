@@ -937,7 +937,7 @@ footer {
     <button class="hbtn hbtn-rise" id="btnRise" onclick="connectRise()">
       <span id="riseLabel">Connect RISE Wallet</span>
     </button>
-    <button class="hbtn hbtn-wallet" id="btnWallet" onclick="connectWallet()">
+    <button class="hbtn hbtn-wallet" id="btnWallet" onclick="state.walletConnected ? disconnectWallet() : connectWallet()">
       <span id="walletLabel">Connect Wallet</span>
     </button>
   </div>
@@ -1090,7 +1090,7 @@ footer {
         <div class="contract-row">
           <div class="contract-info">
             <div class="contract-name">ReputationToken</div>
-            <div class="contract-addr">0x630070424290A8D4e6834240fDCA58151f01dF56</div>
+            <div class="contract-addr">0xbe03476500efD257F4b67d201C8b03dC384430A7</div>
           </div>
           <span class="contract-chain chain-pending">Fhenix</span>
         </div>
@@ -1270,6 +1270,17 @@ async function connectWallet() {
   }
 }
 
+// ── DISCONNECT WALLET ──
+function disconnectWallet() {
+  state.walletConnected = false;
+  state.walletAddress = null;
+  const btn = document.getElementById('btnWallet');
+  const lbl = document.getElementById('walletLabel');
+  lbl.textContent = 'Connect Wallet';
+  btn.classList.remove('connected');
+  toast('Wallet disconnected');
+}
+
 // ── TABS ──
 function switchTab(id, el) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -1303,22 +1314,48 @@ function updateDots() {
 }
 
 // ── CLAIM HERMES ──
-function claimHermes() {
+async function claimHermes() {
   if (state.hermesClaimed) return;
+  if (!state.walletConnected) { 
+    toast('Connect wallet first'); 
+    return; 
+  }
+  
   const btn = document.getElementById('btnHermes');
   const lbl = document.getElementById('hermesLabel');
   const spin = document.getElementById('hermesSpinner');
+  
   spin.style.display = 'inline-block';
   lbl.textContent = 'claiming...';
   btn.style.pointerEvents = 'none';
-  setTimeout(() => {
+  
+  try {
+    // HermesFaucet su RISE
+    const faucetAddress = '0xB10FFD0D5c8d41100F9a47fEB24F4f407768187D';
+    const claimData = '0x4e71d92d'; // claim()
+    
+    const txHash = await window.ethereum.request({
+      method: 'eth_sendTransaction',
+      params: [{
+        from: state.walletAddress,
+        to: faucetAddress,
+        data: claimData,
+      }],
+    });
+    
     state.hermesClaimed = true;
     spin.style.display = 'none';
     lbl.textContent = '✓ 1000 HERMES';
     btn.classList.add('claimed');
     updateDots();
+    addActivity('claim', 'HermesFaucet', '1000 HERMES');
     toast('1000 HERMES claimed from HermesFaucet');
-  }, 1200);
+  } catch(e) {
+    spin.style.display = 'none';
+    lbl.textContent = 'Claim 1000 HERMES';
+    btn.style.pointerEvents = 'all';
+    toast('Transaction rejected');
+  }
 }
 
 // ── INCO DEPOSIT ──
@@ -1374,13 +1411,40 @@ async function claimRep() {
     return; 
   }
   
+ // Verifica che sia su Arbitrium
+const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+if (chainId !== '0x66eee') { // Arbitrium Sepolia
+  toast('Switch to Arbitrium Sepolia network first');
+  try {
+    await window.ethereum.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: '0x66eee' }],
+    });
+  } catch (switchError) {
+    // Network non aggiunto, proponi add
+    if (switchError.code === 4902) {
+      await window.ethereum.request({
+        method: 'wallet_addEthereumChain',
+        params: [{
+          chainId: '0x66eee',
+          chainName: 'Arbitrium Sepolia',
+          nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+          rpcUrls: ['https://ethereum-sepolia-rpc.publicnode.com'],
+          blockExplorerUrls: ['https://sepolia.etherscan.io'],
+        }],
+      });
+    }
+  }
+  return;
+}
+
   const btn = document.getElementById('btnRep');
   btn.textContent = '◈ claiming…';
   btn.style.pointerEvents = 'none';
   
   try {
-    // ReputationToken su Sepolia
-    const repAddress = '0x630070424290A8D4e6834240fDCA58151f01dF56';
+    // ReputationToken su Arbitrium
+    const repAddress = '0xbe03476500efD257F4b67d201C8b03dC384430A7';
     const claimData = '0x4e71d92d'; // claimScore()
     
     const txHash = await window.ethereum.request({
@@ -1389,7 +1453,7 @@ async function claimRep() {
         from: state.walletAddress,
         to: repAddress,
         data: claimData,
-        gas: '0x30000',
+        gas: '0x100000',
       }],
     });
     
