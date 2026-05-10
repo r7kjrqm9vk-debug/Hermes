@@ -33,19 +33,17 @@ The core insight: RISE provides the speed, Inco provides operational privacy, Fh
 | HermesTracker | `0x584A7eE5421b1066929f3e63D045bA66a0186b86` |
 | HermesToken | `0xe61a27b88c5912C2AD936419A9cA4281B4644189` |
 | HermesFaucet | `0xB10FFD0D5c8d41100F9a47fEB24F4f407768187D` |
-| Counter | `0x95237d9B46Fc528B3adc87B4173d9898f4665824` |
 
 ### Inco Lightning (Base Sepolia)
 | Contract | Address |
 |---|---|
 | ConfidentialVault | `0x772a1A3942fBbdEb06826966CDA3476394f93399` |
-| Counter | `0x3aF51122a39b876fD2752C5b588B6A5C45A7492d` |
 
 ### Fhenix CoFHE (Sepolia)
 | Contract | Address |
 |---|---|
 | ConfidentialVaultFhenix | `0x002E2c0DfFDF29584994c495E77A870dF54d4e64` |
-| Counter | `0x990e8Db53f77E6A3eD84889339a442fA04920392` |
+| ReputationToken | `0x630070424290A8D4e6834240fDCA58151f01dF56` |
 
 ## Contracts
 
@@ -72,7 +70,7 @@ Full technical analysis: [article.md](./article.md)
 
 ## Frontend
 
-Live at: **[VERCEL_LINK]**
+Live at:  https://hermes-protocol.vercel.app
 
 Connect MetaMask → claim HERMES from faucet → create markets on RISE → deposit into confidential vaults.
 
