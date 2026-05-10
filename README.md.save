@@ -41,11 +41,11 @@ The core insight: RISE provides the speed, Inco provides operational privacy, Fh
 | ConfidentialVault | `0x772a1A3942fBbdEb06826966CDA3476394f93399` |
 | Counter | `0x3aF51122a39b876fD2752C5b588B6A5C45A7492d` |
 
-### Fhenix CoFHE (Sepolia)
-| Contract | Address |
-|---|---|
-| ConfidentialVaultFhenix | `0x002E2c0DfFDF29584994c495E77A870dF54d4e64` |
-| ReputationToken | `0x630070424290A8D4e6834240fDCA58151f01dF56` |
+### Fhenix CoFHE
+   | Contract | Address | Network |
+   |---|---|---|
+   | ConfidentialVaultFhenix | `0xcCd429E8c2FcFE095A8CDdfA4735c1f129fE8569` | Arbitrium Sepolia |
+   | ReputationToken | `0xbe03476500efD257F4b67d201C8b03dC384430A7` | Arbitrum Sepolia |
 
 ## Contracts
 

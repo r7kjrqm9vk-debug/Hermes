@@ -16,8 +16,8 @@ The core insight: RISE provides the speed, Inco provides operational privacy, Fh
 ┌─────────────────────────────────────────────────┐
 │                HERMES Protocol                  │
 ├──────────────┬──────────────┬───────────────────┤
-│  RISE Chain  │  Inco/Base   │  Fhenix/Sepolia   │
-│              │  Sepolia     │                   │
+│  RISE Chain  │  Inco/Base   │  Fhenix/Arbitrium │
+│              │  Sepolia     │  Sepolia          │
 │ HermesMarket │ Confidential │ Confidential      │
 │ HermesTrack  │ Vault (TEE)  │ Vault (FHE)       │
 │ HermesToken  │ ~1s latency  │ ~5-15s latency    │
@@ -39,11 +39,11 @@ The core insight: RISE provides the speed, Inco provides operational privacy, Fh
 |---|---|
 | ConfidentialVault | `0x772a1A3942fBbdEb06826966CDA3476394f93399` |
 
-### Fhenix CoFHE (Sepolia)
+### Fhenix CoFHE (Arbitrium Sepolia)
 | Contract | Address |
 |---|---|
-| ConfidentialVaultFhenix | `0x002E2c0DfFDF29584994c495E77A870dF54d4e64` |
-| ReputationToken | `0x630070424290A8D4e6834240fDCA58151f01dF56` |
+| ConfidentialVaultFhenix | `0xcCd429E8c2FcFE095A8CDdfA4735c1f129fE8569` |
+| ReputationToken | `0xbe03476500efD257F4b67d201C8b03dC384430A7` |
 
 ## Contracts
 
@@ -75,8 +75,9 @@ Live at:  https://hermes-protocol.vercel.app
 Connect MetaMask → claim HERMES from faucet → create markets on RISE → deposit into confidential vaults.
 
 ## Stack
-- Solidity `^0.8.24`
+- Solidity `^0.8.25` (upgraded for CoFHE compatibility)
 - Foundry 1.6.0
+- Hardhat 2.x (for Fhenix CoFHE deployments)
 - Inco Lightning SDK `@inco/lightning`
 - Fhenix CoFHE `@fhenixprotocol/cofhe-contracts`
 - Vanilla HTML/JS frontend (zero framework dependencies)
