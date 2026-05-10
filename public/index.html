@@ -1367,29 +1367,61 @@ function withdrawInco() {
 }
 
 // ── CLAIM REP ──
-function claimRep() {
+async function claimRep() {
   if (state.repClaimed) return;
+  if (!state.walletConnected) { 
+    toast('Connect wallet first'); 
+    return; 
+  }
+  
   const btn = document.getElementById('btnRep');
   btn.textContent = '◈ claiming…';
   btn.style.pointerEvents = 'none';
-  let progress = 0;
-  const interval = setInterval(() => {
-    progress += 12;
-    state.repScore = Math.min(150, Math.round(progress * 1.5));
-    document.getElementById('repScore').textContent = state.repScore;
-    document.getElementById('repFill').style.width = Math.min(100, (state.repScore / 150) * 100) + '%';
-    if (progress >= 100) {
-      clearInterval(interval);
-      state.repClaimed = true;
-      state.repScore = 150;
-      document.getElementById('repScore').textContent = '150';
-      document.getElementById('repFill').style.width = '100%';
-      btn.classList.add('done');
-      btn.textContent = '✓ Score 150 — creator enabled';
-      updateDots();
-      toast('Reputation token claimed · score 150 / 100 threshold');
-    }
-  }, 600);
+  
+  try {
+    // ReputationToken su Sepolia
+    const repAddress = '0x630070424290A8D4e6834240fDCA58151f01dF56';
+    const claimData = '0x4e71d92d'; // claimScore()
+    
+    const txHash = await window.ethereum.request({
+      method: 'eth_sendTransaction',
+      params: [{
+        from: state.walletAddress,
+        to: repAddress,
+        data: claimData,
+        gas: '0x30000',
+      }],
+    });
+    
+    toast('Transaction sent · waiting for confirmation…');
+    
+    // Simula progress mentre aspetta mining
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += 12;
+      state.repScore = Math.min(150, Math.round(progress * 1.5));
+      document.getElementById('repScore').textContent = state.repScore;
+      document.getElementById('repFill').style.width = Math.min(100, (state.repScore / 150) * 100) + '%';
+      if (progress >= 100) {
+        clearInterval(interval);
+        state.repClaimed = true;
+        state.repScore = 150;
+        document.getElementById('repScore').textContent = '150';
+        document.getElementById('repFill').style.width = '100%';
+        btn.classList.add('done');
+        btn.textContent = '✓ Score 150 — creator enabled';
+        updateDots();
+        addActivity('claim', 'ReputationToken', 'score 150');
+        toast('Reputation token claimed · score 150 / 100 threshold');
+      }
+    }, 600);
+    
+  } catch(e) {
+    console.log(e);
+    btn.textContent = '◈ Claim Reputation Token';
+    btn.style.pointerEvents = 'all';
+    toast('Transaction rejected');
+  }
 }
 
 // ── RISE WALLET ──
