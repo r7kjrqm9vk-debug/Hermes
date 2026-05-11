@@ -354,6 +354,39 @@ document.getElementById('connectWallet').addEventListener('click', async () => {
         return;
     }
     
+    // Connect wallet - force MetaMask
+document.getElementById('connectWallet').addEventListener('click', async () => {
+    // Check if already connected
+    if (userAddress) {
+        // Disconnect
+        provider = null;
+        signer = null;
+        userAddress = null;
+        document.getElementById('walletAddress').textContent = '';
+        document.getElementById('connectWallet').textContent = 'Connect Wallet';
+        document.getElementById('connectWallet').disabled = false;
+        return;
+    }
+    
+    // Force MetaMask detection (add this block)
+    const ethereum = window.ethereum;
+    
+    if (ethereum?.providers) {
+        const metamask = ethereum.providers.find(p => p.isMetaMask);
+        if (!metamask) {
+            alert('Please install MetaMask or disable Phantom in Brave settings!');
+            return;
+        }
+        window.ethereum = metamask;
+    } else if (!ethereum?.isMetaMask) {
+        alert('MetaMask not detected. Please disable Phantom in Brave settings.');
+        return;
+    }
+    
+    // Then continue with existing connection code
+    try {
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        // ... rest of code
     // Force MetaMask (ignore Phantom)
     if (typeof window.ethereum === 'undefined' || !window.ethereum.isMetaMask) {
         alert('Please install MetaMask!');
