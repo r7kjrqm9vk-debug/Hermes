@@ -388,10 +388,6 @@ document.getElementById('connectWallet').addEventListener('click', async () => {
         await window.ethereum.request({ method: 'eth_requestAccounts' });
         // ... rest of code
     // Force MetaMask (ignore Phantom)
-    if (typeof window.ethereum === 'undefined' || !window.ethereum.isMetaMask) {
-        alert('Please install MetaMask!');
-        return;
-    }
     
     try {
         await window.ethereum.request({ method: 'eth_requestAccounts' });
