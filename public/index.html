@@ -340,30 +340,42 @@
 
         let provider, signer, userAddress;
 
-        // Connect wallet
-        document.getElementById('connectWallet').addEventListener('click', async () => {
-            if (typeof window.ethereum === 'undefined') {
-                alert('Please install MetaMask!');
-                return;
-            }
-            
-            try {
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-                provider = new ethers.providers.Web3Provider(window.ethereum);
-                signer = provider.getSigner();
-                userAddress = await signer.getAddress();
-                
-                document.getElementById('walletAddress').textContent = 
-                    `Connected: ${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
-                document.getElementById('connectWallet').textContent = 'Connected ✓';
-                document.getElementById('connectWallet').disabled = true;
-                
-                await loadUserState();
-            } catch (error) {
-                console.error('Connection failed:', error);
-                showStatus('riseStatus', 'Connection failed', 'error');
-            }
-        });
+       // Connect wallet - force MetaMask
+document.getElementById('connectWallet').addEventListener('click', async () => {
+    // Check if already connected
+    if (userAddress) {
+        // Disconnect
+        provider = null;
+        signer = null;
+        userAddress = null;
+        document.getElementById('walletAddress').textContent = '';
+        document.getElementById('connectWallet').textContent = 'Connect Wallet';
+        document.getElementById('connectWallet').disabled = false;
+        return;
+    }
+    
+    // Force MetaMask (ignore Phantom)
+    if (typeof window.ethereum === 'undefined' || !window.ethereum.isMetaMask) {
+        alert('Please install MetaMask!');
+        return;
+    }
+    
+    try {
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+        signer = provider.getSigner();
+        userAddress = await signer.getAddress();
+        
+        document.getElementById('walletAddress').textContent = 
+            `Connected: ${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`;
+        document.getElementById('connectWallet').textContent = 'Disconnect';
+        
+        await loadUserState();
+    } catch (error) {
+        console.error('Connection failed:', error);
+        showStatus('riseStatus', 'Connection failed', 'error');
+    }
+});
 
         // Load user state
         async function loadUserState() {
