@@ -383,11 +383,7 @@ document.getElementById('connectWallet').addEventListener('click', async () => {
         return;
     }
     
-    // Then continue with existing connection code
-    try {
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
-        // ... rest of code
-    // Force MetaMask (ignore Phantom)
+   
     
     try {
         await window.ethereum.request({ method: 'eth_requestAccounts' });
