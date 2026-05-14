@@ -1,87 +1,81 @@
-# HERMES Protocol
+# ⚡ HERMES Protocol
 
-> Performant private DeFi — market making on RISE Chain with confidential vaults on Inco Lightning and Fhenix CoFHE.
+**Privacy-First Multi-Chain DeFi Protocol**  
+*Encrypted Dark Pools with TEE (Inco) + FHE (Fhenix) + Zero-Gas Trading (RISE)*
 
-## Overview
+---
 
-HERMES is a multi-chain DeFi protocol that combines:
-- **High-performance execution** on RISE Chain (1ms latency, parallel EVM, native orderbook)
-- **Confidential liquidity** on Inco Lightning (encrypted vault positions via TEE)
-- **Encrypted identity** on Fhenix CoFHE (creator score via FHE — zero trust)
+## 🎯 Overview
 
-The core insight: RISE provides the speed, Inco provides operational privacy, Fhenix provides permanent identity guarantees. Three layers, one coherent protocol.
+HERMES is a privacy-preserving DeFi protocol enabling encrypted prediction markets and dark pool trading across multiple chains. Users can deposit collateral, trade with hidden positions, and maintain confidential balances using cutting-edge cryptographic techniques.
 
-## Architecture
+### Key Features
 
-┌─────────────────────────────────────────────────┐
-│                HERMES Protocol                  │
-├──────────────┬──────────────┬───────────────────┤
-│  RISE Chain  │  Inco/Base   │  Fhenix/Arbitrium │
-│              │  Sepolia     │  Sepolia          │
-│ HermesMarket │ Confidential │ Confidential      │
-│ HermesTrack  │ Vault (TEE)  │ Vault (FHE)       │
-│ HermesToken  │ ~1s latency  │ ~5-15s latency    │
-│ HermesFaucet │ Intel TDX    │ LWE lattice       │
-└──────────────┴──────────────┴───────────────────┘
+- 🔒 **Encrypted Positions** - Trade without revealing your holdings
+- 🌐 **Multi-Chain** - Seamless cross-chain liquidity  
+- ⚡ **Zero Gas** - Free transactions on RISE Chain
+- 🎯 **Dark Pools** - Privacy-preserving AMM markets
+- 🏆 **Encrypted Leaderboard** - Compete without exposing stats
 
-## Deployed Contracts
+---
 
-### RISE Testnet (Chain ID: 11155931)
-| Contract | Address |
-|---|---|
-| HermesMarket | `0x4e0385b56AfA1FA2DBdf3f3b8A09ccEBFe2E75c4` |
-| HermesTracker | `0x584A7eE5421b1066929f3e63D045bA66a0186b86` |
-| HermesToken | `0xe61a27b88c5912C2AD936419A9cA4281B4644189` |
-| HermesFaucet | `0xB10FFD0D5c8d41100F9a47fEB24F4f407768187D` |
+## 📝 Deployed Contracts
 
-### Inco Lightning (Base Sepolia)
-| Contract | Address |
-|---|---|
-| ConfidentialVault | `0x772a1A3942fBbdEb06826966CDA3476394f93399` |
+### INCO (Base Sepolia) - ✅ FULLY TESTED
 
-### Fhenix CoFHE (Arbitrium Sepolia)
-| Contract | Address |
-|---|---|
-| ConfidentialVaultFhenix | `0xcCd429E8c2FcFE095A8CDdfA4735c1f129fE8569` |
-| ReputationToken | `0xbe03476500efD257F4b67d201C8b03dC384430A7` |
+| Contract | Address | Status |
+|----------|---------|--------|
+| cHERMES Token | `0x3F2ce33a3c90ad2D9a5D05c76B9a60946fAbd700` | ✅ Working |
+| ConfidentialVault | `0xdf4C7863Ae5FcDC015bE73732E3CFF4AC2cf47e9` | ✅ Working |
+| EncryptedAMM | `0x4a0CE6FB0b10a6966eFF5A4c5c3734f0Bd9e256d` | ✅ Working |
 
-## Contracts
+**Verified Transactions:**
+- [Deposit TX](https://sepolia.basescan.org/tx/0xafa1c732e993b9f1b37526284ff879c1bd8a32245db79878ddce8babc381fb99)
+- [Market Created](https://sepolia.basescan.org/tx/0x1fba8276a3f54a14842ae39466d42978e200b7de863c8fc64d00822f5802e257)  
+- [Trade Executed](https://sepolia.basescan.org/tx/0x57b470bb962482c99ceacc01175f8e0d8fea61146f9db1b133af59bf085daccc)
 
-### HermesMarket
-Permissionless market registry on RISE Chain. Any address can create a market pair. Integrates with RISE MarketCore native orderbook. 3 markets live: HERMES/USDC, ETH/USDC, RISE/USDC.
+### FHENIX (Arbitrum Sepolia)
 
-### HermesToken + HermesFaucet
-ERC-20 token native to HERMES protocol. Faucet drips 1000 HERMES every 24h per wallet. Used for market liquidity and protocol participation.
+| Contract | Address | Status |
+|----------|---------|--------|
+| EncryptedLeaderboard | `0x6B9dDB6205D3C786c7A992a8943d1Edaa7b8A4E7` | ✅ Deployed |
+| ReputationToken | `0x309c7017F6862537B96d89590759394a69FE3601` | ⚠️ Testnet FHE WIP |
 
-### HermesTracker
-On-chain activity logger. Records actions, market ids, volumes with full auditability.
+### RISE Chain (Testnet)
 
-### ConfidentialVault (Inco)
-TEE-based private vault using Inco Lightning. Balances encrypted via Intel TDX enclave. Deposit operations complete in ~800ms–1.2s. Trust model: hardware attestation.
+| Contract | Address | Status |
+|----------|---------|--------|
+| HermesWallet | `0x6fEaaAdAa2itD5E76c81bcEcECcB73c248ac3207` | ✅ Working |
+| IncoCollateralBridge | `0x0980cF9a9fB86761E33717a2e5A1c0678363d029` | ✅ Working |
+| HermesMarket | `0x9E806D6CAbc238de24E3B9AAD065c1F339D278D8` | ✅ Working |
 
-### ConfidentialVaultFhenix
-FHE-based private vault using Fhenix CoFHE. Balances encrypted via Fully Homomorphic Encryption — mathematically impossible to read, even by the protocol. Operations complete in ~5–15s. Trust model: LWE lattice cryptography (zero hardware trust).
+---
 
-## Why RISE + Inco + Fhenix?
+## 🚀 Live Demo
 
-RISE provides 1ms execution that makes TEE and FHE latency acceptable in production. Inco handles operational data (vault positions) with ~1s TEE latency. Fhenix handles permanent data (creator scores, identity) with mathematical guarantees no hardware can provide.
+**Frontend:** [hermes-protocol.vercel.app](https://hermes-protocol.vercel.app)
 
-Full technical analysis: [article.md](./article.md)
+---
 
-## Frontend
+## 🛠️ Tech Stack
 
-Live at:  https://hermes-protocol.vercel.app
+- Solidity 0.8.24+
+- Foundry - Smart contract development
+- Inco Lightning - TEE privacy layer
+- Fhenix CoFHE - FHE encryption  
+- ethers.js - Frontend integration
 
-Connect MetaMask → claim HERMES from faucet → create markets on RISE → deposit into confidential vaults.
+---
 
-## Stack
-- Solidity `^0.8.25` (upgraded for CoFHE compatibility)
-- Foundry 1.6.0
-- Hardhat 2.x (for Fhenix CoFHE deployments)
-- Inco Lightning SDK `@inco/lightning`
-- Fhenix CoFHE `@fhenixprotocol/cofhe-contracts`
-- Vanilla HTML/JS frontend (zero framework dependencies)
+## 📊 Metrics
 
-## Author
-`0xE8e8272b7574F5248eDDF28aAf882dB89474af6c`
-Built as part of the HERMES multi-chain DeFi experiment.
+| Metric | Value |
+|--------|-------|
+| **Chains** | 3 (RISE, Inco, Fhenix) |
+| **Contracts** | 8 deployed |
+| **Test TXs** | 10+ verified |
+| **Privacy Stack** | TEE + FHE |
+
+---
+
+**HERMES Protocol** • Privacy-First DeFi • 2024
