@@ -5,12 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HERMES Protocol - Privacy-First DeFi</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
@@ -18,32 +13,16 @@
             min-height: 100vh;
             padding: 20px;
         }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        header {
-            text-align: center;
-            padding: 40px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 40px;
-        }
-
-        h1 {
-            font-size: 48px;
+        .container { max-width: 1200px; margin: 0 auto; }
+        header { text-align: center; padding: 40px 0; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 40px; }
+        h1 { 
+            font-size: 48px; 
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 10px;
         }
-
-        .tagline {
-            color: #a0a0a0;
-            font-size: 18px;
-        }
-
+        .tagline { color: #a0a0a0; font-size: 18px; }
         .wallet-section {
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.1);
@@ -52,7 +31,6 @@
             margin-bottom: 30px;
             text-align: center;
         }
-
         button {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -64,50 +42,17 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
-        }
-
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .address {
-            font-family: 'Courier New', monospace;
-            color: #667eea;
-            font-weight: 600;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 24px;
-            margin-bottom: 30px;
-        }
-
+        button:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .address { font-family: 'Courier New', monospace; color: #667eea; font-weight: 600; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; margin-bottom: 30px; }
         .card {
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 16px;
             padding: 24px;
-            transition: all 0.3s ease;
         }
-
-        .card:hover {
-            border-color: rgba(102, 126, 234, 0.5);
-            transform: translateY(-4px);
-        }
-
-        .card h2 {
-            color: #667eea;
-            margin-bottom: 16px;
-            font-size: 24px;
-        }
-
+        .card h2 { color: #667eea; margin-bottom: 16px; font-size: 24px; }
         input {
             width: 100%;
             padding: 12px;
@@ -118,50 +63,11 @@
             color: white;
             font-size: 14px;
         }
-
-        input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .success {
-            background: rgba(34, 197, 94, 0.1);
-            border: 1px solid rgba(34, 197, 94, 0.3);
-            color: #4ade80;
-            padding: 12px;
-            border-radius: 8px;
-            margin: 12px 0;
-        }
-
-        .error {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #f87171;
-            padding: 12px;
-            border-radius: 8px;
-            margin: 12px 0;
-        }
-
-        .loading {
-            color: #667eea;
-        }
-
-        .network-badge {
-            display: inline-block;
-            padding: 6px 12px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            font-size: 12px;
-            margin: 4px;
-        }
-
-        footer {
-            text-align: center;
-            padding: 40px 0;
-            color: #666;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            margin-top: 60px;
-        }
+        input:focus { outline: none; border-color: #667eea; }
+        .success { background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); color: #4ade80; padding: 12px; border-radius: 8px; margin: 12px 0; }
+        .error { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; padding: 12px; border-radius: 8px; margin: 12px 0; }
+        .network-badge { display: inline-block; padding: 6px 12px; background: rgba(255, 255, 255, 0.1); border-radius: 8px; font-size: 12px; margin: 4px; }
+        footer { text-align: center; padding: 40px 0; color: #666; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 60px; }
     </style>
 </head>
 <body>
@@ -177,7 +83,7 @@
         </header>
 
         <div class="wallet-section">
-            <button id="connectBtn" onclick="connectWallet()">Connect MetaMask</button>
+            <button id="connectBtn">Connect MetaMask</button>
             <div id="walletInfo" style="display:none; margin-top: 16px;">
                 <div>Connected: <span class="address" id="userAddress"></span></div>
                 <div style="margin-top: 8px;">
@@ -190,9 +96,9 @@
         <div class="grid">
             <div class="card">
                 <h2>🔷 Deposit to Vault</h2>
-                <p style="color: #a0a0a0; margin-bottom: 16px;">Deposit ETH and receive cHERMES (1:1000 ratio)</p>
+                <p style="color: #a0a0a0; margin-bottom: 16px;">Deposit ETH → Receive cHERMES (1:1000)</p>
                 <input type="number" id="depositAmount" placeholder="Amount in ETH (e.g., 0.1)" step="0.01">
-                <button onclick="depositToVault()">Deposit to Vault</button>
+                <button id="depositBtn">Deposit to Vault</button>
                 <div id="depositStatus"></div>
             </div>
 
@@ -200,7 +106,7 @@
                 <h2>🔷 Trade on Dark Pool</h2>
                 <p style="color: #a0a0a0; margin-bottom: 16px;">Buy YES shares (Market ID: 0)</p>
                 <input type="number" id="tradeAmount" placeholder="Trade amount (ETH)" value="0.02" step="0.01">
-                <button onclick="buyYes()">Buy YES Shares</button>
+                <button id="tradeBtn">Buy YES Shares</button>
                 <div id="tradeStatus"></div>
             </div>
 
@@ -208,42 +114,30 @@
                 <h2>📊 Protocol Stats</h2>
                 <div style="padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
                     <span style="color: #a0a0a0;">Vault TVL</span>
-                    <span style="float: right; color: #fff; font-weight: 600;" id="tvl">Loading...</span>
+                    <span style="float: right; font-weight: 600;" id="tvl">Loading...</span>
                 </div>
                 <div style="padding: 12px 0;">
                     <span style="color: #a0a0a0;">Total Markets</span>
-                    <span style="float: right; color: #fff; font-weight: 600;" id="totalMarkets">0</span>
+                    <span style="float: right; font-weight: 600;" id="totalMarkets">0</span>
                 </div>
             </div>
         </div>
 
         <footer>
-            <p>HERMES Protocol • Privacy-First DeFi with TEE & FHE</p>
-            <p style="margin-top: 8px; font-size: 14px;">Base Sepolia • Arbitrum Sepolia • RISE Chain</p>
+            <p>HERMES Protocol • Privacy-First DeFi</p>
+            <p style="margin-top: 8px; font-size: 14px;">
+                <a href="https://github.com/r7kjrqm9vk-debug/Hermes" style="color: #667eea;">GitHub</a> • 
+                <a href="https://sepolia.basescan.org/address/0x4a0CE6FB0b10a6966eFF5A4c5c3734f0Bd9e256d" style="color: #667eea;">Contracts</a>
+            </p>
         </footer>
     </div>
 
-    <!-- Load ethers BEFORE script -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js" 
-            integrity="sha512-FjKz/ZCX/It5m8OT42hEZlKiRN7ygs25d1ntDhTRwz0ZJcZEL6GjFF7/fJ/3dQJq5hNjPZ9ZgaGa3YlH7H+kXA==" 
-            crossorigin="anonymous" 
-            referrerpolicy="no-referrer"
-            onload="console.log('Ethers loaded:', typeof ethers)"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <script>
-        // Wait for ethers to load
-        window.addEventListener('load', function() {
-            if (typeof ethers === 'undefined') {
-                document.body.innerHTML = '<div style="text-align:center;padding:50px;color:red;">Error: Failed to load ethers.js. Please refresh.</div>';
-                return;
-            }
-            initApp();
-        });
-
         const CONTRACTS = {
-            incoVault: '0xdf4C7863Ae5FcDC015bE73732E3CFF4AC2cf47e9',
+            vault: '0xdf4C7863Ae5FcDC015bE73732E3CFF4AC2cf47e9',
             cHERMES: '0x3F2ce33a3c90ad2D9a5D05c76B9a60946fAbd700',
-            encryptedAMM: '0x4a0CE6FB0b10a6966eFF5A4c5c3734f0Bd9e256d'
+            amm: '0x4a0CE6FB0b10a6966eFF5A4c5c3734f0Bd9e256d'
         };
 
         const VAULT_ABI = ['function deposit() payable', 'function totalDeposits() view returns (uint256)'];
@@ -252,114 +146,83 @@
 
         let provider, signer, userAddress;
 
-        function initApp() {
-            console.log('App initialized, ethers available:', typeof ethers !== 'undefined');
-            loadStats();
-        }
-
         async function loadStats() {
             try {
-                provider = new ethers.providers.JsonRpcProvider('https://sepolia.base.org');
-                const vaultContract = new ethers.Contract(CONTRACTS.incoVault, VAULT_ABI, provider);
-                const tvl = await vaultContract.totalDeposits();
-                document.getElementById('tvl').textContent = ethers.utils.formatEther(tvl) + ' ETH';
+                const rpcProvider = new ethers.providers.JsonRpcProvider('https://sepolia.base.org');
+                const vault = new ethers.Contract(CONTRACTS.vault, VAULT_ABI, rpcProvider);
+                const tvl = await vault.totalDeposits();
+                document.getElementById('tvl').textContent = ethers.utils.formatEther(tvl).slice(0, 6) + ' ETH';
                 
-                const ammContract = new ethers.Contract(CONTRACTS.encryptedAMM, AMM_ABI, provider);
-                const marketCount = await ammContract.marketCount();
-                document.getElementById('totalMarkets').textContent = marketCount.toString();
+                const amm = new ethers.Contract(CONTRACTS.amm, AMM_ABI, rpcProvider);
+                const count = await amm.marketCount();
+                document.getElementById('totalMarkets').textContent = count.toString();
             } catch (e) {
-                console.error('Stats error:', e);
+                console.error(e);
             }
         }
 
-        async function connectWallet() {
-            if (!window.ethereum) {
-                alert('Please install MetaMask!');
-                return;
-            }
-
+        document.getElementById('connectBtn').onclick = async function() {
+            if (!window.ethereum) return alert('Install MetaMask!');
+            
             try {
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
                 provider = new ethers.providers.Web3Provider(window.ethereum);
                 signer = provider.getSigner();
                 userAddress = await signer.getAddress();
 
-                document.getElementById('connectBtn').style.display = 'none';
+                this.style.display = 'none';
                 document.getElementById('walletInfo').style.display = 'block';
                 document.getElementById('userAddress').textContent = userAddress.slice(0, 6) + '...' + userAddress.slice(-4);
 
-                const balance = await provider.getBalance(userAddress);
-                document.getElementById('ethBalance').textContent = ethers.utils.formatEther(balance).slice(0, 6);
+                const bal = await provider.getBalance(userAddress);
+                document.getElementById('ethBalance').textContent = ethers.utils.formatEther(bal).slice(0, 5);
 
-                const cHermesContract = new ethers.Contract(CONTRACTS.cHERMES, CHERMES_ABI, provider);
-                const cHermesBalance = await cHermesContract.balanceOf(userAddress);
-                document.getElementById('cHermesBalance').textContent = ethers.utils.formatEther(cHermesBalance).slice(0, 6);
-            } catch (error) {
-                showError('depositStatus', error.message);
+                const cH = new ethers.Contract(CONTRACTS.cHERMES, CHERMES_ABI, provider);
+                const cBal = await cH.balanceOf(userAddress);
+                document.getElementById('cHermesBalance').textContent = ethers.utils.formatEther(cBal).slice(0, 5);
+            } catch (e) {
+                alert(e.message);
             }
-        }
+        };
 
-        async function depositToVault() {
-            const amount = document.getElementById('depositAmount').value;
-            if (!amount || !signer) return alert('Connect wallet and enter amount!');
+        document.getElementById('depositBtn').onclick = async function() {
+            const amt = document.getElementById('depositAmount').value;
+            if (!amt || !signer) return alert('Connect wallet & enter amount!');
 
             try {
-                await switchChain(84532);
-                const vaultContract = new ethers.Contract(CONTRACTS.incoVault, VAULT_ABI, signer);
+                await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x14a34' }] });
+                const vault = new ethers.Contract(CONTRACTS.vault, VAULT_ABI, signer);
                 
-                showLoading('depositStatus', 'Depositing...');
-                const tx = await vaultContract.deposit({ value: ethers.utils.parseEther(amount) });
+                document.getElementById('depositStatus').innerHTML = '<div style="color:#667eea">Depositing...</div>';
+                const tx = await vault.deposit({ value: ethers.utils.parseEther(amt) });
                 await tx.wait();
                 
-                showSuccess('depositStatus', `✅ Deposited ${amount} ETH! Received ${amount * 1000} cHERMES`);
+                document.getElementById('depositStatus').innerHTML = '<div class="success">✅ Deposited ' + amt + ' ETH!</div>';
                 loadStats();
-            } catch (error) {
-                showError('depositStatus', error.message);
+            } catch (e) {
+                document.getElementById('depositStatus').innerHTML = '<div class="error">' + e.message + '</div>';
             }
-        }
+        };
 
-        async function buyYes() {
-            const amount = document.getElementById('tradeAmount').value;
-            if (!amount || !signer) return alert('Connect wallet and enter amount!');
+        document.getElementById('tradeBtn').onclick = async function() {
+            const amt = document.getElementById('tradeAmount').value;
+            if (!amt || !signer) return alert('Connect wallet & enter amount!');
 
             try {
-                await switchChain(84532);
-                const ammContract = new ethers.Contract(CONTRACTS.encryptedAMM, AMM_ABI, signer);
+                await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x14a34' }] });
+                const amm = new ethers.Contract(CONTRACTS.amm, AMM_ABI, signer);
                 
-                const amountWei = ethers.utils.parseEther(amount);
-                showLoading('tradeStatus', 'Buying YES shares...');
-                
-                const tx = await ammContract.buyYes(0, amountWei, { value: amountWei });
+                document.getElementById('tradeStatus').innerHTML = '<div style="color:#667eea">Trading...</div>';
+                const tx = await amm.buyYes(0, ethers.utils.parseEther(amt), { value: ethers.utils.parseEther(amt) });
                 await tx.wait();
                 
-                showSuccess('tradeStatus', '✅ Bought YES shares! Position encrypted 🔒');
-            } catch (error) {
-                showError('tradeStatus', error.message);
+                document.getElementById('tradeStatus').innerHTML = '<div class="success">✅ Bought YES shares! 🔒</div>';
+            } catch (e) {
+                document.getElementById('tradeStatus').innerHTML = '<div class="error">' + e.message + '</div>';
             }
-        }
+        };
 
-        async function switchChain(chainId) {
-            try {
-                await window.ethereum.request({
-                    method: 'wallet_switchEthereumChain',
-                    params: [{ chainId: '0x' + chainId.toString(16) }],
-                });
-            } catch (error) {
-                throw new Error('Please switch to Base Sepolia in MetaMask');
-            }
-        }
-
-        function showLoading(id, msg) {
-            document.getElementById(id).innerHTML = `<div class="loading">${msg}</div>`;
-        }
-
-        function showSuccess(id, msg) {
-            document.getElementById(id).innerHTML = `<div class="success">${msg}</div>`;
-        }
-
-        function showError(id, msg) {
-            document.getElementById(id).innerHTML = `<div class="error">Error: ${msg}</div>`;
-        }
+        setTimeout(loadStats, 1000);
     </script>
 </body>
 </html>
