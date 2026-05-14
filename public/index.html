@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HERMES Protocol - Privacy-First DeFi</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -109,26 +108,6 @@
             font-size: 24px;
         }
 
-        .stat {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .stat:last-child {
-            border-bottom: none;
-        }
-
-        .stat-label {
-            color: #a0a0a0;
-        }
-
-        .stat-value {
-            color: #fff;
-            font-weight: 600;
-        }
-
         input {
             width: 100%;
             padding: 12px;
@@ -163,20 +142,8 @@
             margin: 12px 0;
         }
 
-        .badge {
-            display: inline-block;
-            padding: 4px 12px;
-            background: rgba(102, 126, 234, 0.2);
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
+        .loading {
             color: #667eea;
-            margin-left: 8px;
-        }
-
-        .badge.success {
-            background: rgba(34, 197, 94, 0.2);
-            color: #4ade80;
         }
 
         .network-badge {
@@ -188,89 +155,12 @@
             margin: 4px;
         }
 
-        .loading {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-top-color: #667eea;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin-left: 8px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .step-indicator {
-            display: flex;
-            justify-content: space-between;
-            margin: 30px 0;
-            position: relative;
-        }
-
-        .step {
-            flex: 1;
-            text-align: center;
-            position: relative;
-            padding: 20px;
-        }
-
-        .step-number {
-            width: 40px;
-            height: 40px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 10px;
-            font-weight: 600;
-            border: 2px solid rgba(255,255,255,0.2);
-        }
-
-        .step.completed .step-number {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-color: #667eea;
-        }
-
-        .step-title {
-            font-size: 14px;
-            color: #a0a0a0;
-        }
-
-        .step.completed .step-title {
-            color: #667eea;
-        }
-
         footer {
             text-align: center;
             padding: 40px 0;
             color: #666;
             border-top: 1px solid rgba(255,255,255,0.1);
             margin-top: 60px;
-        }
-
-        .chain-selector {
-            display: flex;
-            gap: 12px;
-            margin: 16px 0;
-        }
-
-        .chain-btn {
-            flex: 1;
-            padding: 12px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .chain-btn.active {
-            background: rgba(102, 126, 234, 0.2);
-            border-color: #667eea;
         }
     </style>
 </head>
@@ -286,7 +176,6 @@
             </div>
         </header>
 
-        <!-- Wallet Connection -->
         <div class="wallet-section">
             <button id="connectBtn" onclick="connectWallet()">Connect MetaMask</button>
             <div id="walletInfo" style="display:none; margin-top: 16px;">
@@ -298,99 +187,32 @@
             </div>
         </div>
 
-        <!-- Step Indicator -->
-        <div class="step-indicator">
-            <div class="step" id="step1">
-                <div class="step-number">1</div>
-                <div class="step-title">Claim on RISE</div>
-            </div>
-            <div class="step" id="step2">
-                <div class="step-number">2</div>
-                <div class="step-title">Deposit to Vault</div>
-            </div>
-            <div class="step" id="step3">
-                <div class="step-number">3</div>
-                <div class="step-title">Trade on AMM</div>
-            </div>
-            <div class="step" id="step4">
-                <div class="step-number">4</div>
-                <div class="step-title">Claim Reputation</div>
-            </div>
-        </div>
-
         <div class="grid">
-            <!-- RISE Faucet -->
             <div class="card">
-                <h2>🟣 Step 1: Claim HERMES</h2>
-                <p style="color: #a0a0a0; margin-bottom: 16px;">Get 1000 HERMES on RISE testnet (0 gas!)</p>
-                <button onclick="claimHermes()">Claim 1000 HERMES</button>
-                <div id="claimStatus"></div>
-            </div>
-
-            <!-- Inco Vault -->
-            <div class="card">
-                <h2>🔷 Step 2: Deposit to Vault</h2>
+                <h2>🔷 Deposit to Vault</h2>
                 <p style="color: #a0a0a0; margin-bottom: 16px;">Deposit ETH and receive cHERMES (1:1000 ratio)</p>
                 <input type="number" id="depositAmount" placeholder="Amount in ETH (e.g., 0.1)" step="0.01">
                 <button onclick="depositToVault()">Deposit to Vault</button>
-                <div class="stat" style="margin-top: 16px;">
-                    <span class="stat-label">TVL</span>
-                    <span class="stat-value" id="tvl">Loading...</span>
-                </div>
                 <div id="depositStatus"></div>
             </div>
 
-            <!-- Create Market -->
             <div class="card">
-                <h2>🔷 Step 3a: Create Dark Pool Market</h2>
-                <p style="color: #a0a0a0; margin-bottom: 16px;">Launch encrypted prediction market</p>
-                <input type="text" id="marketQuestion" placeholder="Market question">
-                <input type="number" id="marketDays" placeholder="Days until resolution" value="7">
-                <input type="number" id="initialLiquidity" placeholder="Initial liquidity (ETH)" value="0.1" step="0.01">
-                <button onclick="createMarket()">Create Market</button>
-                <div id="createMarketStatus"></div>
-            </div>
-
-            <!-- Trade on AMM -->
-            <div class="card">
-                <h2>🔷 Step 3b: Trade on Dark Pool</h2>
-                <p style="color: #a0a0a0; margin-bottom: 16px;">Buy YES/NO shares (encrypted positions!)</p>
-                <input type="number" id="marketId" placeholder="Market ID" value="0">
+                <h2>🔷 Trade on Dark Pool</h2>
+                <p style="color: #a0a0a0; margin-bottom: 16px;">Buy YES shares (Market ID: 0)</p>
                 <input type="number" id="tradeAmount" placeholder="Trade amount (ETH)" value="0.02" step="0.01">
-                <div class="chain-selector">
-                    <button class="chain-btn active" onclick="selectSide('yes')">Buy YES</button>
-                    <button class="chain-btn" onclick="selectSide('no')">Buy NO</button>
-                </div>
-                <button onclick="trade()">Execute Trade</button>
+                <button onclick="buyYes()">Buy YES Shares</button>
                 <div id="tradeStatus"></div>
             </div>
 
-            <!-- Fhenix Reputation -->
-            <div class="card">
-                <h2>🔶 Step 4: Claim Reputation</h2>
-                <p style="color: #a0a0a0; margin-bottom: 16px;">Get reputation score on Fhenix (unlock leaderboard)</p>
-                <button onclick="claimReputation()">Claim Reputation</button>
-                <div class="stat" style="margin-top: 16px;">
-                    <span class="stat-label">My Rank</span>
-                    <span class="stat-value" id="myRank">-</span>
-                </div>
-                <div id="reputationStatus"></div>
-            </div>
-
-            <!-- Stats -->
             <div class="card">
                 <h2>📊 Protocol Stats</h2>
-                <div class="stat">
-                    <span class="stat-label">Total Markets</span>
-                    <span class="stat-value" id="totalMarkets">0</span>
+                <div style="padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <span style="color: #a0a0a0;">Vault TVL</span>
+                    <span style="float: right; color: #fff; font-weight: 600;" id="tvl">Loading...</span>
                 </div>
-                <div class="stat">
-                    <span class="stat-label">Total Traders</span>
-                    <span class="stat-value" id="totalTraders">0</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-label">Vault TVL</span>
-                    <span class="stat-value" id="vaultTVL">0 ETH</span>
+                <div style="padding: 12px 0;">
+                    <span style="color: #a0a0a0;">Total Markets</span>
+                    <span style="float: right; color: #fff; font-weight: 600;" id="totalMarkets">0</span>
                 </div>
             </div>
         </div>
@@ -401,48 +223,54 @@
         </footer>
     </div>
 
+    <!-- Load ethers BEFORE script -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js" 
+            integrity="sha512-FjKz/ZCX/It5m8OT42hEZlKiRN7ygs25d1ntDhTRwz0ZJcZEL6GjFF7/fJ/3dQJq5hNjPZ9ZgaGa3YlH7H+kXA==" 
+            crossorigin="anonymous" 
+            referrerpolicy="no-referrer"
+            onload="console.log('Ethers loaded:', typeof ethers)"></script>
+
     <script>
-        // Contract Addresses
+        // Wait for ethers to load
+        window.addEventListener('load', function() {
+            if (typeof ethers === 'undefined') {
+                document.body.innerHTML = '<div style="text-align:center;padding:50px;color:red;">Error: Failed to load ethers.js. Please refresh.</div>';
+                return;
+            }
+            initApp();
+        });
+
         const CONTRACTS = {
-            // RISE Chain
-            hermesWallet: '0x6fEaaAdAa2itD5E76c81bcEcECcB73c248ac3207',
-            hermesMarket: '0x9E806D6CAbc238de24E3B9AAD065c1F339D278D8',
-            
-            // INCO (Base Sepolia)
             incoVault: '0xdf4C7863Ae5FcDC015bE73732E3CFF4AC2cf47e9',
             cHERMES: '0x3F2ce33a3c90ad2D9a5D05c76B9a60946fAbd700',
-            encryptedAMM: '0x4a0CE6FB0b10a6966eFF5A4c5c3734f0Bd9e256d',
-            
-            // FHENIX (Arbitrum Sepolia)
-            reputationToken: '0x309c7017F6862537B96d89590759394a69FE3601',
-            encryptedLeaderboard: '0x6B9dDB6205D3C786c7A992a8943d1Edaa7b8A4E7',
-            
-            incoBridge: '0x0980cF9a9fB86761E33717a2e5A1c0678363d029'
+            encryptedAMM: '0x4a0CE6FB0b10a6966eFF5A4c5c3734f0Bd9e256d'
         };
 
-        // Chain IDs
-        const CHAINS = {
-            RISE: 84532, // Using Base Sepolia for now
-            INCO: 84532, // Base Sepolia
-            FHENIX: 421614 // Arbitrum Sepolia
-        };
-
-        let provider, signer, userAddress;
-        let tradeSide = 'yes';
-
-        // ABIs (minimal)
         const VAULT_ABI = ['function deposit() payable', 'function totalDeposits() view returns (uint256)'];
         const CHERMES_ABI = ['function balanceOf(address) view returns (uint256)'];
-        const AMM_ABI = [
-            'function createMarket(string,uint256,uint256,uint256) payable returns (uint256)',
-            'function buyYes(uint256,uint256) payable',
-            'function buyNo(uint256,uint256) payable',
-            'function marketCount() view returns (uint256)',
-            'function getMarketInfo(uint256) view returns (string,uint256,uint256,address,bool,bool)'
-        ];
-        const FAUCET_ABI = ['function claim()'];
-        const REP_ABI = ['function claimScore()','function hasClaimed(address) view returns (bool)'];
-        const LEADERBOARD_ABI = ['function myRank() view returns (uint32)', 'function totalTraders() view returns (uint256)'];
+        const AMM_ABI = ['function buyYes(uint256,uint256) payable', 'function marketCount() view returns (uint256)'];
+
+        let provider, signer, userAddress;
+
+        function initApp() {
+            console.log('App initialized, ethers available:', typeof ethers !== 'undefined');
+            loadStats();
+        }
+
+        async function loadStats() {
+            try {
+                provider = new ethers.providers.JsonRpcProvider('https://sepolia.base.org');
+                const vaultContract = new ethers.Contract(CONTRACTS.incoVault, VAULT_ABI, provider);
+                const tvl = await vaultContract.totalDeposits();
+                document.getElementById('tvl').textContent = ethers.utils.formatEther(tvl) + ' ETH';
+                
+                const ammContract = new ethers.Contract(CONTRACTS.encryptedAMM, AMM_ABI, provider);
+                const marketCount = await ammContract.marketCount();
+                document.getElementById('totalMarkets').textContent = marketCount.toString();
+            } catch (e) {
+                console.error('Stats error:', e);
+            }
+        }
 
         async function connectWallet() {
             if (!window.ethereum) {
@@ -460,34 +288,53 @@
                 document.getElementById('walletInfo').style.display = 'block';
                 document.getElementById('userAddress').textContent = userAddress.slice(0, 6) + '...' + userAddress.slice(-4);
 
-                await updateBalances();
-                await updateStats();
+                const balance = await provider.getBalance(userAddress);
+                document.getElementById('ethBalance').textContent = ethers.utils.formatEther(balance).slice(0, 6);
+
+                const cHermesContract = new ethers.Contract(CONTRACTS.cHERMES, CHERMES_ABI, provider);
+                const cHermesBalance = await cHermesContract.balanceOf(userAddress);
+                document.getElementById('cHermesBalance').textContent = ethers.utils.formatEther(cHermesBalance).slice(0, 6);
             } catch (error) {
-                showError('claimStatus', error.message);
+                showError('depositStatus', error.message);
             }
         }
 
-        async function updateBalances() {
-            const balance = await provider.getBalance(userAddress);
-            document.getElementById('ethBalance').textContent = ethers.utils.formatEther(balance).slice(0, 6);
+        async function depositToVault() {
+            const amount = document.getElementById('depositAmount').value;
+            if (!amount || !signer) return alert('Connect wallet and enter amount!');
 
-            const cHermesContract = new ethers.Contract(CONTRACTS.cHERMES, CHERMES_ABI, provider);
-            const cHermesBalance = await cHermesContract.balanceOf(userAddress);
-            document.getElementById('cHermesBalance').textContent = ethers.utils.formatEther(cHermesBalance).slice(0, 6);
+            try {
+                await switchChain(84532);
+                const vaultContract = new ethers.Contract(CONTRACTS.incoVault, VAULT_ABI, signer);
+                
+                showLoading('depositStatus', 'Depositing...');
+                const tx = await vaultContract.deposit({ value: ethers.utils.parseEther(amount) });
+                await tx.wait();
+                
+                showSuccess('depositStatus', `✅ Deposited ${amount} ETH! Received ${amount * 1000} cHERMES`);
+                loadStats();
+            } catch (error) {
+                showError('depositStatus', error.message);
+            }
         }
 
-        async function updateStats() {
-            try {
-                const vaultContract = new ethers.Contract(CONTRACTS.incoVault, VAULT_ABI, provider);
-                const tvl = await vaultContract.totalDeposits();
-                document.getElementById('tvl').textContent = ethers.utils.formatEther(tvl) + ' ETH';
-                document.getElementById('vaultTVL').textContent = ethers.utils.formatEther(tvl) + ' ETH';
+        async function buyYes() {
+            const amount = document.getElementById('tradeAmount').value;
+            if (!amount || !signer) return alert('Connect wallet and enter amount!');
 
-                const ammContract = new ethers.Contract(CONTRACTS.encryptedAMM, AMM_ABI, provider);
-                const marketCount = await ammContract.marketCount();
-                document.getElementById('totalMarkets').textContent = marketCount.toString();
-            } catch (e) {
-                console.error('Stats error:', e);
+            try {
+                await switchChain(84532);
+                const ammContract = new ethers.Contract(CONTRACTS.encryptedAMM, AMM_ABI, signer);
+                
+                const amountWei = ethers.utils.parseEther(amount);
+                showLoading('tradeStatus', 'Buying YES shares...');
+                
+                const tx = await ammContract.buyYes(0, amountWei, { value: amountWei });
+                await tx.wait();
+                
+                showSuccess('tradeStatus', '✅ Bought YES shares! Position encrypted 🔒');
+            } catch (error) {
+                showError('tradeStatus', error.message);
             }
         }
 
@@ -498,150 +345,21 @@
                     params: [{ chainId: '0x' + chainId.toString(16) }],
                 });
             } catch (error) {
-                throw new Error('Please switch to the correct network in MetaMask');
+                throw new Error('Please switch to Base Sepolia in MetaMask');
             }
         }
 
-        async function claimHermes() {
-            try {
-                await switchChain(CHAINS.RISE);
-                const faucetContract = new ethers.Contract(CONTRACTS.hermesWallet, FAUCET_ABI, signer);
-                
-                showLoading('claimStatus', 'Claiming 1000 HERMES...');
-                const tx = await faucetContract.claim();
-                await tx.wait();
-                
-                showSuccess('claimStatus', '✅ Claimed 1000 HERMES!');
-                document.getElementById('step1').classList.add('completed');
-            } catch (error) {
-                showError('claimStatus', error.message);
-            }
+        function showLoading(id, msg) {
+            document.getElementById(id).innerHTML = `<div class="loading">${msg}</div>`;
         }
 
-        async function depositToVault() {
-            const amount = document.getElementById('depositAmount').value;
-            if (!amount) return alert('Enter amount!');
-
-            try {
-                await switchChain(CHAINS.INCO);
-                const vaultContract = new ethers.Contract(CONTRACTS.incoVault, VAULT_ABI, signer);
-                
-                showLoading('depositStatus', 'Depositing to vault...');
-                const tx = await vaultContract.deposit({ value: ethers.utils.parseEther(amount) });
-                await tx.wait();
-                
-                showSuccess('depositStatus', `✅ Deposited ${amount} ETH! Received ${amount * 1000} cHERMES`);
-                document.getElementById('step2').classList.add('completed');
-                await updateBalances();
-                await updateStats();
-            } catch (error) {
-                showError('depositStatus', error.message);
-            }
+        function showSuccess(id, msg) {
+            document.getElementById(id).innerHTML = `<div class="success">${msg}</div>`;
         }
 
-        async function createMarket() {
-            const question = document.getElementById('marketQuestion').value;
-            const days = document.getElementById('marketDays').value;
-            const liquidity = document.getElementById('initialLiquidity').value;
-            
-            if (!question || !days || !liquidity) return alert('Fill all fields!');
-
-            try {
-                await switchChain(CHAINS.INCO);
-                const ammContract = new ethers.Contract(CONTRACTS.encryptedAMM, AMM_ABI, signer);
-                
-                const resolutionTime = Math.floor(Date.now() / 1000) + (days * 86400);
-                const half = ethers.utils.parseEther((liquidity / 2).toString());
-                
-                showLoading('createMarketStatus', 'Creating market...');
-                const tx = await ammContract.createMarket(question, resolutionTime, half, half, {
-                    value: ethers.utils.parseEther(liquidity)
-                });
-                const receipt = await tx.wait();
-                
-                showSuccess('createMarketStatus', `✅ Market created! ID: ${await ammContract.marketCount() - 1}`);
-                await updateStats();
-            } catch (error) {
-                showError('createMarketStatus', error.message);
-            }
+        function showError(id, msg) {
+            document.getElementById(id).innerHTML = `<div class="error">Error: ${msg}</div>`;
         }
-
-        function selectSide(side) {
-            tradeSide = side;
-            document.querySelectorAll('.chain-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-        }
-
-        async function trade() {
-            const marketId = document.getElementById('marketId').value;
-            const amount = document.getElementById('tradeAmount').value;
-            
-            if (!amount) return alert('Enter amount!');
-
-            try {
-                await switchChain(CHAINS.INCO);
-                const ammContract = new ethers.Contract(CONTRACTS.encryptedAMM, AMM_ABI, signer);
-                
-                const amountWei = ethers.utils.parseEther(amount);
-                showLoading('tradeStatus', `Buying ${tradeSide.toUpperCase()} shares...`);
-                
-                const tx = tradeSide === 'yes' 
-                    ? await ammContract.buyYes(marketId, amountWei, { value: amountWei })
-                    : await ammContract.buyNo(marketId, amountWei, { value: amountWei });
-                    
-                await tx.wait();
-                
-                showSuccess('tradeStatus', `✅ Bought ${tradeSide.toUpperCase()} shares! Position encrypted 🔒`);
-                document.getElementById('step3').classList.add('completed');
-            } catch (error) {
-                showError('tradeStatus', error.message);
-            }
-        }
-
-        async function claimReputation() {
-            try {
-                await switchChain(CHAINS.FHENIX);
-                const repContract = new ethers.Contract(CONTRACTS.reputationToken, REP_ABI, signer);
-                
-                showLoading('reputationStatus', 'Claiming reputation...');
-                const tx = await repContract.claimScore();
-                await tx.wait();
-                
-                showSuccess('reputationStatus', '✅ Reputation claimed!');
-                document.getElementById('step4').classList.add('completed');
-                
-                // Update rank
-                const leaderboardContract = new ethers.Contract(CONTRACTS.encryptedLeaderboard, LEADERBOARD_ABI, provider);
-                const rank = await leaderboardContract.myRank();
-                document.getElementById('myRank').textContent = '#' + rank;
-            } catch (error) {
-                showError('reputationStatus', error.message);
-            }
-        }
-
-        function showLoading(elementId, message) {
-            document.getElementById(elementId).innerHTML = `<div style="color: #667eea;">${message} <span class="loading"></span></div>`;
-        }
-
-        function showSuccess(elementId, message) {
-            document.getElementById(elementId).innerHTML = `<div class="success">${message}</div>`;
-        }
-
-        function showError(elementId, message) {
-            document.getElementById(elementId).innerHTML = `<div class="error">Error: ${message}</div>`;
-        }
-
-        // Auto-load stats on page load
-        window.addEventListener('load', async () => {
-            if (window.ethereum) {
-                try {
-                    provider = new ethers.providers.Web3Provider(window.ethereum);
-                    await updateStats();
-                } catch (e) {
-                    console.log('Provider not ready');
-                }
-            }
-        });
     </script>
 </body>
 </html>
