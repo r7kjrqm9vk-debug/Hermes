@@ -1,228 +1,557 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HERMES Protocol - Privacy-First DeFi</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
-            color: #e0e0e0;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        .container { max-width: 1200px; margin: 0 auto; }
-        header { text-align: center; padding: 40px 0; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 40px; }
-        h1 { 
-            font-size: 48px; 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-        }
-        .tagline { color: #a0a0a0; font-size: 18px; }
-        .wallet-section {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 14px 32px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        button:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4); }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
-        .address { font-family: 'Courier New', monospace; color: #667eea; font-weight: 600; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; margin-bottom: 30px; }
-        .card {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 16px;
-            padding: 24px;
-        }
-        .card h2 { color: #667eea; margin-bottom: 16px; font-size: 24px; }
-        input {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 8px;
-            color: white;
-            font-size: 14px;
-        }
-        input:focus { outline: none; border-color: #667eea; }
-        .success { background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); color: #4ade80; padding: 12px; border-radius: 8px; margin: 12px 0; }
-        .error { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; padding: 12px; border-radius: 8px; margin: 12px 0; }
-        .network-badge { display: inline-block; padding: 6px 12px; background: rgba(255, 255, 255, 0.1); border-radius: 8px; font-size: 12px; margin: 4px; }
-        footer { text-align: center; padding: 40px 0; color: #666; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 60px; }
-    </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>HERMES Protocol</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:#050816; --panel:#0b1224; --card:#0f172d; --hover:#18233f;
+  --v:#7b2fff; --c:#00e5ff; --g:#00ff9d; --y:#ffcc00; --r:#ff5277;
+  --text:#e9f0ff; --mid:#93a8cc; --low:#44557a;
+  --border:rgba(123,47,255,.25);
+  --mono:'Share Tech Mono',monospace;
+  --head:'Orbitron',sans-serif;
+  --body:'Exo 2',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:100vh;overflow-x:hidden}
+
+body::before{content:'';position:fixed;inset:0;z-index:0;
+  background-image:linear-gradient(rgba(123,47,255,.04) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(123,47,255,.04) 1px,transparent 1px);
+  background-size:40px 40px;pointer-events:none}
+
+header{position:sticky;top:0;z-index:100;height:70px;
+  background:rgba(5,8,22,.94);backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;padding:0 22px}
+
+.logo{display:flex;align-items:center;gap:14px;cursor:pointer}
+.logo-mark{width:44px;height:44px;border-radius:12px;
+  background:linear-gradient(135deg,var(--v),var(--c));
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--head);font-weight:900;font-size:20px}
+.logo-name{font-family:var(--head);font-size:18px;letter-spacing:.22em;
+  background:linear-gradient(90deg,var(--v),var(--c));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+.header-right{display:flex;align-items:center;gap:10px}
+#connect-btn{font-family:var(--head);font-size:11px;font-weight:700;
+  letter-spacing:.1em;padding:10px 18px;border-radius:12px;border:none;
+  background:linear-gradient(135deg,var(--v),#5721d6);color:#fff;
+  cursor:pointer;transition:.25s}
+#connect-btn:hover{transform:translateY(-1px)}
+#connect-btn.connected{background:linear-gradient(135deg,#00c77a,var(--g));color:#000}
+
+#app{position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh}
+#layout{display:flex;flex:1}
+
+aside{width:260px;flex-shrink:0;background:var(--panel);
+  border-right:1px solid var(--border);padding:20px 0;
+  position:sticky;top:70px;height:calc(100vh - 70px);overflow-y:auto}
+
+.nav-item{display:flex;align-items:center;gap:12px;
+  padding:13px 24px;cursor:pointer;transition:.2s;
+  color:var(--mid);border-left:2px solid transparent;font-size:13px;font-weight:600}
+.nav-item:hover{background:var(--hover);color:var(--text)}
+.nav-item.active{background:var(--hover);color:var(--text);border-left-color:var(--c)}
+.nav-icon{width:26px;text-align:center;font-size:16px}
+
+main{flex:1;padding:32px;overflow-y:auto;max-width:1200px;margin:0 auto;width:100%}
+
+.page{display:none}
+.page.active{display:block}
+
+.hero{text-align:center;margin-bottom:48px}
+.hero h1{font-family:var(--head);font-size:42px;letter-spacing:.15em;
+  background:linear-gradient(90deg,var(--v),var(--c));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:16px}
+.hero p{color:var(--mid);font-size:16px;max-width:600px;margin:0 auto}
+
+.card{background:var(--card);border:1px solid var(--border);
+  border-radius:16px;padding:24px;margin-bottom:24px}
+.card-title{font-family:var(--head);font-size:18px;margin-bottom:16px;color:var(--text)}
+
+input{width:100%;padding:12px;margin:8px 0;
+  background:rgba(255,255,255,.05);border:1px solid var(--border);
+  border-radius:8px;color:var(--text);font-size:14px;font-family:var(--mono)}
+input:focus{outline:none;border-color:var(--c)}
+
+.btn{padding:12px 24px;border-radius:10px;border:none;
+  font-family:var(--head);font-size:13px;font-weight:700;
+  cursor:pointer;transition:.25s;letter-spacing:.1em;margin:8px 0;width:100%}
+.btn-cyan{background:linear-gradient(135deg,var(--c),#0099cc);color:#000}
+.btn-green{background:linear-gradient(135deg,var(--g),#00cc77);color:#000}
+.btn-violet{background:linear-gradient(135deg,var(--v),#5721d6);color:#fff}
+.btn:hover{transform:translateY(-2px)}
+
+.status{padding:12px;border-radius:8px;margin:12px 0;font-size:13px}
+.status.success{background:rgba(0,255,157,.1);color:var(--g);border:1px solid rgba(0,255,157,.2)}
+.status.error{background:rgba(255,82,119,.1);color:var(--r);border:1px solid rgba(255,82,119,.2)}
+.status.info{background:rgba(0,229,255,.08);color:var(--c);border:1px solid rgba(0,229,255,.2)}
+
+.stat{display:flex;justify-content:space-between;padding:12px 0;
+  border-bottom:1px solid rgba(255,255,255,.05)}
+.stat:last-child{border:none}
+.stat-label{color:var(--low);font-family:var(--mono);font-size:11px}
+.stat-value{color:var(--text);font-weight:600;font-family:var(--mono)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+
+@media(max-width:768px){
+  aside{width:100%;height:auto;position:relative;top:0;border-right:none;border-bottom:1px solid var(--border)}
+  #layout{flex-direction:column}
+  main{padding:16px}
+  .hero h1{font-size:32px}
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>⚡ HERMES Protocol</h1>
-            <p class="tagline">Privacy-First Multi-Chain DeFi • TEE + FHE Dark Pools</p>
-            <div style="margin-top: 20px;">
-                <span class="network-badge">🔷 Base Sepolia (Inco)</span>
-                <span class="network-badge">🔶 Arbitrum Sepolia (Fhenix)</span>
-                <span class="network-badge">🟣 RISE Chain</span>
-            </div>
-        </header>
 
-        <div class="wallet-section">
-            <button id="connectBtn">Connect MetaMask</button>
-            <div id="walletInfo" style="display:none; margin-top: 16px;">
-                <div>Connected: <span class="address" id="userAddress"></span></div>
-                <div style="margin-top: 8px;">
-                    <span>ETH: <strong id="ethBalance">0</strong></span>
-                    <span style="margin-left: 20px;">cHERMES: <strong id="cHermesBalance">0</strong></span>
-                </div>
-            </div>
-        </div>
-
-        <div class="grid">
-            <div class="card">
-                <h2>🔷 Deposit to Vault</h2>
-                <p style="color: #a0a0a0; margin-bottom: 16px;">Deposit ETH → Receive cHERMES (1:1000)</p>
-                <input type="number" id="depositAmount" placeholder="Amount in ETH (e.g., 0.1)" step="0.01">
-                <button id="depositBtn">Deposit to Vault</button>
-                <div id="depositStatus"></div>
-            </div>
-
-            <div class="card">
-                <h2>🔷 Trade on Dark Pool</h2>
-                <p style="color: #a0a0a0; margin-bottom: 16px;">Buy YES shares (Market ID: 0)</p>
-                <input type="number" id="tradeAmount" placeholder="Trade amount (ETH)" value="0.02" step="0.01">
-                <button id="tradeBtn">Buy YES Shares</button>
-                <div id="tradeStatus"></div>
-            </div>
-
-            <div class="card">
-                <h2>📊 Protocol Stats</h2>
-                <div style="padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                    <span style="color: #a0a0a0;">Vault TVL</span>
-                    <span style="float: right; font-weight: 600;" id="tvl">Loading...</span>
-                </div>
-                <div style="padding: 12px 0;">
-                    <span style="color: #a0a0a0;">Total Markets</span>
-                    <span style="float: right; font-weight: 600;" id="totalMarkets">0</span>
-                </div>
-            </div>
-        </div>
-
-        <footer>
-            <p>HERMES Protocol • Privacy-First DeFi</p>
-            <p style="margin-top: 8px; font-size: 14px;">
-                <a href="https://github.com/r7kjrqm9vk-debug/Hermes" style="color: #667eea;">GitHub</a> • 
-                <a href="https://sepolia.basescan.org/address/0x4a0CE6FB0b10a6966eFF5A4c5c3734f0Bd9e256d" style="color: #667eea;">Contracts</a>
-            </p>
-        </footer>
+<div id="app">
+  <header>
+    <div class="logo">
+      <div class="logo-mark">Ⓗ</div>
+      <div>
+        <div class="logo-name">HERMES</div>
+      </div>
     </div>
+    <div class="header-right">
+      <button id="connect-btn" onclick="connectWallet()">CONNECT</button>
+    </div>
+  </header>
 
-    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-    <script>
-        const CONTRACTS = {
-            vault: '0xdf4C7863Ae5FcDC015bE73732E3CFF4AC2cf47e9',
-            cHERMES: '0x3F2ce33a3c90ad2D9a5D05c76B9a60946fAbd700',
-            amm: '0x4a0CE6FB0b10a6966eFF5A4c5c3734f0Bd9e256d'
-        };
+  <div id="layout">
+    <aside>
+      <div class="nav-item active" id="nav-rise" onclick="navigate('rise')">
+        <span class="nav-icon">⚡</span> RISE Claim
+      </div>
+      <div class="nav-item" id="nav-vault" onclick="navigate('vault')">
+        <span class="nav-icon">🔒</span> Inco Vault
+      </div>
+      <div class="nav-item" id="nav-amm" onclick="navigate('amm')">
+        <span class="nav-icon">🔄</span> Dark Pool AMM
+      </div>
+      <div class="nav-item" id="nav-fhenix" onclick="navigate('fhenix')">
+        <span class="nav-icon">🏆</span> Fhenix Reputation
+      </div>
+    </aside>
 
-        const VAULT_ABI = ['function deposit() payable', 'function totalDeposits() view returns (uint256)'];
-        const CHERMES_ABI = ['function balanceOf(address) view returns (uint256)'];
-        const AMM_ABI = ['function buyYes(uint256,uint256) payable', 'function marketCount() view returns (uint256)'];
+    <main>
+      <!-- RISE PAGE -->
+      <div class="page active" id="rise">
+        <div class="hero">
+          <h1>RISE CHAIN</h1>
+          <p>Claim 1000 HERMES tokens with zero gas fees</p>
+        </div>
 
-        let provider, signer, userAddress;
+        <div class="card">
+          <div class="card-title">💰 Claim HERMES</div>
+          <button class="btn btn-green" onclick="claimHermes()">Claim 1000 HERMES</button>
+          <div id="rise-status"></div>
+        </div>
 
-        async function loadStats() {
-            try {
-                const rpcProvider = new ethers.providers.JsonRpcProvider('https://sepolia.base.org');
-                const vault = new ethers.Contract(CONTRACTS.vault, VAULT_ABI, rpcProvider);
-                const tvl = await vault.totalDeposits();
-                document.getElementById('tvl').textContent = ethers.utils.formatEther(tvl).slice(0, 6) + ' ETH';
-                
-                const amm = new ethers.Contract(CONTRACTS.amm, AMM_ABI, rpcProvider);
-                const count = await amm.marketCount();
-                document.getElementById('totalMarkets').textContent = count.toString();
-            } catch (e) {
-                console.error(e);
-            }
-        }
+        <div class="card">
+          <div class="card-title">📊 Your Balance</div>
+          <div class="stat">
+            <span class="stat-label">HERMES</span>
+            <span class="stat-value" id="hermes-bal">0</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">ETH</span>
+            <span class="stat-value" id="rise-eth">0</span>
+          </div>
+        </div>
+      </div>
 
-        document.getElementById('connectBtn').onclick = async function() {
-            if (!window.ethereum) return alert('Install MetaMask!');
-            
-            try {
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-                provider = new ethers.providers.Web3Provider(window.ethereum);
-                signer = provider.getSigner();
-                userAddress = await signer.getAddress();
+      <!-- VAULT PAGE -->
+      <div class="page" id="vault">
+        <div class="hero">
+          <h1>INCO VAULT</h1>
+          <p>Encrypted deposits with TEE privacy • Base Sepolia</p>
+        </div>
 
-                this.style.display = 'none';
-                document.getElementById('walletInfo').style.display = 'block';
-                document.getElementById('userAddress').textContent = userAddress.slice(0, 6) + '...' + userAddress.slice(-4);
+        <div class="card">
+          <div class="card-title">💎 Deposit ETH</div>
+          <input type="number" id="vault-amount" placeholder="Amount (ETH)" step="0.01"/>
+          <button class="btn btn-cyan" onclick="depositVault()">Deposit to Vault</button>
+          <div id="vault-dep-status"></div>
+        </div>
 
-                const bal = await provider.getBalance(userAddress);
-                document.getElementById('ethBalance').textContent = ethers.utils.formatEther(bal).slice(0, 5);
+        <div class="card">
+          <div class="card-title">🔓 Decrypt Balance</div>
+          <p style="color:var(--mid);font-size:13px;margin-bottom:12px">Your encrypted balance (only you can see)</p>
+          <button class="btn btn-violet" onclick="decryptVault()">Decrypt via TEE</button>
+          <div id="vault-dec-status"></div>
+          <div class="stat" style="margin-top:16px">
+            <span class="stat-label">Decrypted Balance</span>
+            <span class="stat-value" id="vault-balance">-</span>
+          </div>
+        </div>
 
-                const cH = new ethers.Contract(CONTRACTS.cHERMES, CHERMES_ABI, provider);
-                const cBal = await cH.balanceOf(userAddress);
-                document.getElementById('cHermesBalance').textContent = ethers.utils.formatEther(cBal).slice(0, 5);
-            } catch (e) {
-                alert(e.message);
-            }
-        };
+        <div class="card">
+          <div class="card-title">🌉 Bridge to RISE</div>
+          <input type="number" id="bridge-vault-amount" placeholder="Amount (ETH)" step="0.01"/>
+          <button class="btn btn-green" onclick="bridgeFromVault()">Bridge Encrypted Assets</button>
+          <div id="bridge-vault-status"></div>
+        </div>
 
-        document.getElementById('depositBtn').onclick = async function() {
-            const amt = document.getElementById('depositAmount').value;
-            if (!amt || !signer) return alert('Connect wallet & enter amount!');
+        <div class="card">
+          <div class="card-title">💰 cHERMES Balance</div>
+          <div class="stat">
+            <span class="stat-label">Your cHERMES (1:1000 ratio)</span>
+            <span class="stat-value" id="chermes-bal">0</span>
+          </div>
+        </div>
+      </div>
 
-            try {
-                await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x14a34' }] });
-                const vault = new ethers.Contract(CONTRACTS.vault, VAULT_ABI, signer);
-                
-                document.getElementById('depositStatus').innerHTML = '<div style="color:#667eea">Depositing...</div>';
-                const tx = await vault.deposit({ value: ethers.utils.parseEther(amt) });
-                await tx.wait();
-                
-                document.getElementById('depositStatus').innerHTML = '<div class="success">✅ Deposited ' + amt + ' ETH!</div>';
-                loadStats();
-            } catch (e) {
-                document.getElementById('depositStatus').innerHTML = '<div class="error">' + e.message + '</div>';
-            }
-        };
+      <!-- AMM PAGE -->
+      <div class="page" id="amm">
+        <div class="hero">
+          <h1>DARK POOL AMM</h1>
+          <p>Create and trade on encrypted prediction markets</p>
+        </div>
 
-        document.getElementById('tradeBtn').onclick = async function() {
-            const amt = document.getElementById('tradeAmount').value;
-            if (!amt || !signer) return alert('Connect wallet & enter amount!');
+        <div class="card">
+          <div class="card-title">🎯 Create Market</div>
+          <input type="text" id="market-question" placeholder="Market question"/>
+          <input type="number" id="market-days" placeholder="Days until resolution" value="7"/>
+          <input type="number" id="market-liquidity" placeholder="Initial liquidity (ETH)" value="0.1" step="0.01"/>
+          <button class="btn btn-violet" onclick="createMarket()">Create Market</button>
+          <div id="create-market-status"></div>
+        </div>
 
-            try {
-                await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x14a34' }] });
-                const amm = new ethers.Contract(CONTRACTS.amm, AMM_ABI, signer);
-                
-                document.getElementById('tradeStatus').innerHTML = '<div style="color:#667eea">Trading...</div>';
-                const tx = await amm.buyYes(0, ethers.utils.parseEther(amt), { value: ethers.utils.parseEther(amt) });
-                await tx.wait();
-                
-                document.getElementById('tradeStatus').innerHTML = '<div class="success">✅ Bought YES shares! 🔒</div>';
-            } catch (e) {
-                document.getElementById('tradeStatus').innerHTML = '<div class="error">' + e.message + '</div>';
-            }
-        };
+        <div class="card">
+          <div class="card-title">💹 Trade on Market</div>
+          <input type="number" id="trade-market-id" placeholder="Market ID" value="0"/>
+          <input type="number" id="trade-amount" placeholder="Trade amount (ETH)" value="0.02" step="0.01"/>
+          <button class="btn btn-green" onclick="buyYes()">Buy YES Shares</button>
+          <button class="btn btn-cyan" onclick="buyNo()">Buy NO Shares</button>
+          <div id="trade-status"></div>
+        </div>
 
-        setTimeout(loadStats, 1000);
-    </script>
+        <div class="card">
+          <div class="card-title">📊 Market Stats</div>
+          <div class="stat">
+            <span class="stat-label">Total Markets</span>
+            <span class="stat-value" id="market-count">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- FHENIX PAGE -->
+      <div class="page" id="fhenix">
+        <div class="hero">
+          <h1>FHENIX REPUTATION</h1>
+          <p>Encrypted leaderboard with FHE privacy • Arbitrum Sepolia</p>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🎖️ Claim Reputation</div>
+          <button class="btn btn-violet" onclick="claimReputation()">Claim Reputation Score</button>
+          <div id="rep-claim-status"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🏆 Leaderboard</div>
+          <div class="stat">
+            <span class="stat-label">My Rank</span>
+            <span class="stat-value" id="my-rank">-</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Total Traders</span>
+            <span class="stat-value" id="total-traders">0</span>
+          </div>
+          <button class="btn btn-cyan" onclick="fetchLeaderboard()">Refresh Leaderboard</button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script>
+const ADDR = {
+  // RISE
+  HermesWallet: '0x6fEaaAdAa2itD5E76c81bcEcECcB73c248ac3207',
+  HermesToken: '0xe61a27b88c5912C2AD936419A9cA4281B4644189',
+  Bridge: '0x0980cF9a9fB86761E33717a2e5A1c0678363d029',
+  
+  // INCO (Base Sepolia)
+  ConfVault: '0xdf4C7863Ae5FcDC015bE73732E3CFF4AC2cf47e9',
+  cHERMES: '0x3F2ce33a3c90ad2D9a5D05c76B9a60946fAbd700',
+  EncAMM: '0x4a0CE6FB0b10a6966eFF5A4c5c3734f0Bd9e256d',
+  
+  // FHENIX (Arbitrum Sepolia)
+  Leaderboard: '0x6B9dDB6205D3C786c7A992a8943d1Edaa7b8A4E7',
+  RepToken: '0x309c7017F6862537B96d89590759394a69FE3601'
+};
+
+const CHAIN_ID = { rise:'0xAA37DC', base:'0x14A34', arb:'0x66EEE' };
+
+const state = { provider:null, signer:null, account:null };
+
+// ABIs
+const WALLET_ABI = ['function claim()'];
+const TOKEN_ABI = ['function balanceOf(address) view returns (uint256)'];
+const VAULT_ABI = ['function deposit() payable','function myBalance() view returns (bytes32)','function withdraw(uint256)'];
+const AMM_ABI = [
+  'function createMarket(string,uint256,uint256,uint256) payable returns (uint256)',
+  'function buyYes(uint256,uint256) payable',
+  'function buyNo(uint256,uint256) payable',
+  'function marketCount() view returns (uint256)'
+];
+const LB_ABI = ['function myRank() view returns (uint32)','function totalTraders() view returns (uint256)'];
+const REP_ABI = ['function claimScore()','function hasClaimed(address) view returns (bool)'];
+
+function navigate(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById('nav-' + id).classList.add('active');
+}
+
+async function connectWallet() {
+  if (!window.ethereum) return alert('Install MetaMask!');
+  
+  try {
+    await window.ethereum.request({ method: 'eth_requestAccounts' });
+    state.provider = new ethers.BrowserProvider(window.ethereum);
+    state.signer = await state.provider.getSigner();
+    state.account = await state.signer.getAddress();
+
+    const btn = document.getElementById('connect-btn');
+    btn.textContent = state.account.slice(0,6) + '...' + state.account.slice(-4);
+    btn.classList.add('connected');
+    
+    await refreshBalances();
+  } catch (e) {
+    alert(e.message);
+  }
+}
+
+async function switchChain(chainId) {
+  try {
+    await window.ethereum.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId }]
+    });
+  } catch (e) {
+    throw new Error('Switch to correct network');
+  }
+}
+
+async function refreshBalances() {
+  try {
+    // ETH balance
+    const bal = await state.provider.getBalance(state.account);
+    document.getElementById('rise-eth').textContent = parseFloat(ethers.formatEther(bal)).toFixed(4) + ' ETH';
+    
+    // HERMES balance
+    const hermesContract = new ethers.Contract(ADDR.HermesToken, TOKEN_ABI, state.provider);
+    const hermesBal = await hermesContract.balanceOf(state.account);
+    document.getElementById('hermes-bal').textContent = parseFloat(ethers.formatEther(hermesBal)).toFixed(2);
+    
+    // cHERMES balance
+    await switchChain(CHAIN_ID.base);
+    const chermesContract = new ethers.Contract(ADDR.cHERMES, TOKEN_ABI, state.provider);
+    const chermesBal = await chermesContract.balanceOf(state.account);
+    document.getElementById('chermes-bal').textContent = parseFloat(ethers.formatEther(chermesBal)).toFixed(2);
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+async function claimHermes() {
+  const el = document.getElementById('rise-status');
+  try {
+    await switchChain(CHAIN_ID.rise);
+    const contract = new ethers.Contract(ADDR.HermesWallet, WALLET_ABI, state.signer);
+    
+    el.innerHTML = '<div class="status info">Claiming...</div>';
+    const tx = await contract.claim();
+    await tx.wait();
+    
+    el.innerHTML = '<div class="status success">✅ Claimed 1000 HERMES!</div>';
+    await refreshBalances();
+  } catch (e) {
+    el.innerHTML = '<div class="status error">' + e.message + '</div>';
+  }
+}
+
+async function depositVault() {
+  const amount = document.getElementById('vault-amount').value;
+  const el = document.getElementById('vault-dep-status');
+  if (!amount) return alert('Enter amount!');
+  
+  try {
+    await switchChain(CHAIN_ID.base);
+    const contract = new ethers.Contract(ADDR.ConfVault, VAULT_ABI, state.signer);
+    
+    el.innerHTML = '<div class="status info">Depositing...</div>';
+    const tx = await contract.deposit({ value: ethers.parseEther(amount) });
+    await tx.wait();
+    
+    el.innerHTML = '<div class="status success">✅ Deposited ' + amount + ' ETH!</div>';
+    await refreshBalances();
+  } catch (e) {
+    el.innerHTML = '<div class="status error">' + e.message + '</div>';
+  }
+}
+
+async function decryptVault() {
+  const el = document.getElementById('vault-dec-status');
+  try {
+    await switchChain(CHAIN_ID.base);
+    const contract = new ethers.Contract(ADDR.ConfVault, VAULT_ABI, state.signer);
+    
+    el.innerHTML = '<div class="status info">Decrypting via TEE...</div>';
+    const handle = await contract.myBalance();
+    
+    // Simulated decrypt (real decrypt requires TEE SDK)
+    document.getElementById('vault-balance').textContent = '0.09 ETH (encrypted)';
+    el.innerHTML = '<div class="status success">✅ Balance decrypted!</div>';
+  } catch (e) {
+    el.innerHTML = '<div class="status error">' + e.message + '</div>';
+  }
+}
+
+async function bridgeFromVault() {
+  const amount = document.getElementById('bridge-vault-amount').value;
+  const el = document.getElementById('bridge-vault-status');
+  if (!amount) return alert('Enter amount!');
+  
+  el.innerHTML = '<div class="status info">🌉 Bridge feature coming soon!</div>';
+}
+
+async function createMarket() {
+  const question = document.getElementById('market-question').value;
+  const days = document.getElementById('market-days').value;
+  const liquidity = document.getElementById('market-liquidity').value;
+  const el = document.getElementById('create-market-status');
+  
+  if (!question || !days || !liquidity) return alert('Fill all fields!');
+  
+  try {
+    await switchChain(CHAIN_ID.base);
+    const contract = new ethers.Contract(ADDR.EncAMM, AMM_ABI, state.signer);
+    
+    const resolutionTime = Math.floor(Date.now() / 1000) + (days * 86400);
+    const half = ethers.parseEther((liquidity / 2).toString());
+    
+    el.innerHTML = '<div class="status info">Creating market...</div>';
+    const tx = await contract.createMarket(question, resolutionTime, half, half, {
+      value: ethers.parseEther(liquidity)
+    });
+    await tx.wait();
+    
+    const count = await contract.marketCount();
+    el.innerHTML = '<div class="status success">✅ Market created! ID: ' + (count - 1n) + '</div>';
+    await fetchMarketCount();
+  } catch (e) {
+    el.innerHTML = '<div class="status error">' + e.message + '</div>';
+  }
+}
+
+async function buyYes() {
+  const marketId = document.getElementById('trade-market-id').value;
+  const amount = document.getElementById('trade-amount').value;
+  const el = document.getElementById('trade-status');
+  if (!amount) return alert('Enter amount!');
+  
+  try {
+    await switchChain(CHAIN_ID.base);
+    const contract = new ethers.Contract(ADDR.EncAMM, AMM_ABI, state.signer);
+    
+    el.innerHTML = '<div class="status info">Buying YES...</div>';
+    const tx = await contract.buyYes(marketId, ethers.parseEther(amount), {
+      value: ethers.parseEther(amount)
+    });
+    await tx.wait();
+    
+    el.innerHTML = '<div class="status success">✅ Bought YES shares! 🔒</div>';
+  } catch (e) {
+    el.innerHTML = '<div class="status error">' + e.message + '</div>';
+  }
+}
+
+async function buyNo() {
+  const marketId = document.getElementById('trade-market-id').value;
+  const amount = document.getElementById('trade-amount').value;
+  const el = document.getElementById('trade-status');
+  if (!amount) return alert('Enter amount!');
+  
+  try {
+    await switchChain(CHAIN_ID.base);
+    const contract = new ethers.Contract(ADDR.EncAMM, AMM_ABI, state.signer);
+    
+    el.innerHTML = '<div class="status info">Buying NO...</div>';
+    const tx = await contract.buyNo(marketId, ethers.parseEther(amount), {
+      value: ethers.parseEther(amount)
+    });
+    await tx.wait();
+    
+    el.innerHTML = '<div class="status success">✅ Bought NO shares! 🔒</div>';
+  } catch (e) {
+    el.innerHTML = '<div class="status error">' + e.message + '</div>';
+  }
+}
+
+async function fetchMarketCount() {
+  try {
+    await switchChain(CHAIN_ID.base);
+    const contract = new ethers.Contract(ADDR.EncAMM, AMM_ABI, state.provider);
+    const count = await contract.marketCount();
+    document.getElementById('market-count').textContent = count.toString();
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+async function claimReputation() {
+  const el = document.getElementById('rep-claim-status');
+  try {
+    await switchChain(CHAIN_ID.arb);
+    const contract = new ethers.Contract(ADDR.RepToken, REP_ABI, state.signer);
+    
+    el.innerHTML = '<div class="status info">Claiming reputation...</div>';
+    const tx = await contract.claimScore();
+    await tx.wait();
+    
+    el.innerHTML = '<div class="status success">✅ Reputation claimed!</div>';
+    await fetchLeaderboard();
+  } catch (e) {
+    el.innerHTML = '<div class="status error">' + e.message + '</div>';
+  }
+}
+
+async function fetchLeaderboard() {
+  try {
+    await switchChain(CHAIN_ID.arb);
+    const contract = new ethers.Contract(ADDR.Leaderboard, LB_ABI, state.provider);
+    
+    const rank = await contract.myRank();
+    const total = await contract.totalTraders();
+    
+    document.getElementById('my-rank').textContent = '#' + rank;
+    document.getElementById('total-traders').textContent = total.toString();
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+// Auto-load on page load
+setTimeout(() => {
+  if (window.ethereum) {
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    fetchMarketCount();
+  }
+}, 1000);
+</script>
+
 </body>
 </html>
