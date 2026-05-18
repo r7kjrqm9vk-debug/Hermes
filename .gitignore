@@ -20,3 +20,5 @@ docs/
 !.env.example
 .env
 .vercel
+.env
+*.env
