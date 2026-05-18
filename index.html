@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HERMES Protocol - Privacy-First DeFi</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        header { text-align: center; padding: 40px 0; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 40px; }
+        h1 { 
+            font-size: 48px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        .tagline { color: #a0a0a0; font-size: 18px; }
+        .wallet-section {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        button:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .address { font-family: 'Courier New', monospace; color: #667eea; font-weight: 600; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; margin-bottom: 30px; }
+        .card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 24px;
+        }
+        .card h2 { color: #667eea; margin-bottom: 16px; font-size: 24px; }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+        }
+        input:focus { outline: none; border-color: #667eea; }
+        .success { background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); color: #4ade80; padding: 12px; border-radius: 8px; margin: 12px 0; }
+        .error { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; padding: 12px; border-radius: 8px; margin: 12px 0; }
+        .network-badge { display: inline-block; padding: 6px 12px; background: rgba(255, 255, 255, 0.1); border-radius: 8px; font-size: 12px; margin: 4px; }
+        footer { text-align: center; padding: 40px 0; color: #666; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 60px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚡ HERMES Protocol</h1>
+            <p class="tagline">Privacy-First Multi-Chain DeFi • TEE + FHE Dark Pools</p>
+            <div style="margin-top: 20px;">
+                <span class="network-badge">🔷 Base Sepolia (Inco)</span>
+                <span class="network-badge">🔶 Arbitrum Sepolia (Fhenix)</span>
+                <span class="network-badge">🟣 RISE Chain</span>
+            </div>
+        </header>
+
+        <div class="wallet-section">
+            <button id="connectBtn">Connect MetaMask</button>
+            <div id="walletInfo" style="display:none; margin-top: 16px;">
+                <div>Connected: <span class="address" id="userAddress"></span></div>
+                <div style="margin-top: 8px;">
+                    <span>ETH: <strong id="ethBalance">0</strong></span>
+                    <span style="margin-left: 20px;">cHERMES: <strong id="cHermesBalance">0</strong></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h2>🔷 Deposit to Vault</h2>
+                <p style="color: #a0a0a0; margin-bottom: 16px;">Deposit ETH → Receive cHERMES (1:1000)</p>
+                <input type="number" id="depositAmount" placeholder="Amount in ETH (e.g., 0.1)" step="0.01">
+                <button id="depositBtn">Deposit to Vault</button>
+                <div id="depositStatus"></div>
+            </div>
+
+            <div class="card">
+                <h2>🔷 Trade on Dark Pool</h2>
+                <p style="color: #a0a0a0; margin-bottom: 16px;">Buy YES shares (Market ID: 0)</p>
+                <input type="number" id="tradeAmount" placeholder="Trade amount (ETH)" value="0.02" step="0.01">
+                <button id="tradeBtn">Buy YES Shares</button>
+                <div id="tradeStatus"></div>
+            </div>
+
+            <div class="card">
+                <h2>📊 Protocol Stats</h2>
+                <div style="padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <span style="color: #a0a0a0;">Vault TVL</span>
+                    <span style="float: right; font-weight: 600;" id="tvl">Loading...</span>
+                </div>
+                <div style="padding: 12px 0;">
+                    <span style="color: #a0a0a0;">Total Markets</span>
+                    <span style="float: right; font-weight: 600;" id="totalMarkets">0</span>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>HERMES Protocol • Privacy-First DeFi</p>
+            <p style="margin-top: 8px; font-size: 14px;">
+                <a href="https://github.com/r7kjrqm9vk-debug/Hermes" style="color: #667eea;">GitHub</a> • 
+                <a href="https://sepolia.basescan.org/address/0x4a0CE6FB0b10a6966eFF5A4c5c3734f0Bd9e256d" style="color: #667eea;">Contracts</a>
+            </p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script>
+        const CONTRACTS = {
+            vault: '0xdf4C7863Ae5FcDC015bE73732E3CFF4AC2cf47e9',
+            cHERMES: '0x3F2ce33a3c90ad2D9a5D05c76B9a60946fAbd700',
+            amm: '0x4a0CE6FB0b10a6966eFF5A4c5c3734f0Bd9e256d'
+        };
+
+        const VAULT_ABI = ['function deposit() payable', 'function totalDeposits() view returns (uint256)'];
+        const CHERMES_ABI = ['function balanceOf(address) view returns (uint256)'];
+        const AMM_ABI = ['function buyYes(uint256,uint256) payable', 'function marketCount() view returns (uint256)'];
+
+        let provider, signer, userAddress;
+
+        async function loadStats() {
+            try {
+                const rpcProvider = new ethers.providers.JsonRpcProvider('https://sepolia.base.org');
+                const vault = new ethers.Contract(CONTRACTS.vault, VAULT_ABI, rpcProvider);
+                const tvl = await vault.totalDeposits();
+                document.getElementById('tvl').textContent = ethers.utils.formatEther(tvl).slice(0, 6) + ' ETH';
+                
+                const amm = new ethers.Contract(CONTRACTS.amm, AMM_ABI, rpcProvider);
+                const count = await amm.marketCount();
+                document.getElementById('totalMarkets').textContent = count.toString();
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        document.getElementById('connectBtn').onclick = async function() {
+            if (!window.ethereum) return alert('Install MetaMask!');
+            
+            try {
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                provider = new ethers.providers.Web3Provider(window.ethereum);
+                signer = provider.getSigner();
+                userAddress = await signer.getAddress();
+
+                this.style.display = 'none';
+                document.getElementById('walletInfo').style.display = 'block';
+                document.getElementById('userAddress').textContent = userAddress.slice(0, 6) + '...' + userAddress.slice(-4);
+
+                const bal = await provider.getBalance(userAddress);
+                document.getElementById('ethBalance').textContent = ethers.utils.formatEther(bal).slice(0, 5);
+
+                const cH = new ethers.Contract(CONTRACTS.cHERMES, CHERMES_ABI, provider);
+                const cBal = await cH.balanceOf(userAddress);
+                document.getElementById('cHermesBalance').textContent = ethers.utils.formatEther(cBal).slice(0, 5);
+            } catch (e) {
+                alert(e.message);
+            }
+        };
+
+        document.getElementById('depositBtn').onclick = async function() {
+            const amt = document.getElementById('depositAmount').value;
+            if (!amt || !signer) return alert('Connect wallet & enter amount!');
+
+            try {
+                await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x14a34' }] });
+                const vault = new ethers.Contract(CONTRACTS.vault, VAULT_ABI, signer);
+                
+                document.getElementById('depositStatus').innerHTML = '<div style="color:#667eea">Depositing...</div>';
+                const tx = await vault.deposit({ value: ethers.utils.parseEther(amt) });
+                await tx.wait();
+                
+                document.getElementById('depositStatus').innerHTML = '<div class="success">✅ Deposited ' + amt + ' ETH!</div>';
+                loadStats();
+            } catch (e) {
+                document.getElementById('depositStatus').innerHTML = '<div class="error">' + e.message + '</div>';
+            }
+        };
+
+        document.getElementById('tradeBtn').onclick = async function() {
+            const amt = document.getElementById('tradeAmount').value;
+            if (!amt || !signer) return alert('Connect wallet & enter amount!');
+
+            try {
+                await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x14a34' }] });
+                const amm = new ethers.Contract(CONTRACTS.amm, AMM_ABI, signer);
+                
+                document.getElementById('tradeStatus').innerHTML = '<div style="color:#667eea">Trading...</div>';
+                const tx = await amm.buyYes(0, ethers.utils.parseEther(amt), { value: ethers.utils.parseEther(amt) });
+                await tx.wait();
+                
+                document.getElementById('tradeStatus').innerHTML = '<div class="success">✅ Bought YES shares! 🔒</div>';
+            } catch (e) {
+                document.getElementById('tradeStatus').innerHTML = '<div class="error">' + e.message + '</div>';
+            }
+        };
+
+        setTimeout(loadStats, 1000);
+    </script>
+</body>
+</html>

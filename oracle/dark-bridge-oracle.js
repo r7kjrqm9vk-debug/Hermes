@@ -23,23 +23,30 @@ async function init() {
   console.log('📍 Monitoring Inco Vault:', INCO_VAULT);
   console.log('📍 RISE Bridge:', RISE_BRIDGE);
 
-  incoProvider = new ethers.JsonRpcProvider(INCO_RPC);
-  riseProvider = new ethers.JsonRpcProvider(RISE_RPC);
-  
-  if (!process.env.ORACLE_PRIVATE_KEY) {
-    console.error('❌ ORACLE_PRIVATE_KEY not set!');
+  try {
+    incoProvider = new ethers.JsonRpcProvider(INCO_RPC);
+    riseProvider = new ethers.JsonRpcProvider(RISE_RPC);
+    
+    if (!process.env.ORACLE_PRIVATE_KEY) {
+      console.error('❌ ORACLE_PRIVATE_KEY not set!');
+      process.exit(1);
+    }
+    
+    signer = new ethers.Wallet(process.env.ORACLE_PRIVATE_KEY, riseProvider);
+    console.log('🔑 Oracle address:', signer.address);
+
+    lastBlock = await incoProvider.getBlockNumber();
+    console.log('📦 Starting from block:', lastBlock);
+    console.log('✅ Oracle running! Polling every 12 seconds...\n');
+
+    // Poll every 12 seconds (Base Sepolia block time)
+    setInterval(pollDeposits, 12000);
+    
+  } catch (error) {
+    console.error('💥 INIT ERROR:', error.message);
+    console.error(error.stack);
     process.exit(1);
   }
-  
-  signer = new ethers.Wallet(process.env.ORACLE_PRIVATE_KEY, riseProvider);
-  console.log('🔑 Oracle address:', signer.address);
-
-  lastBlock = await incoProvider.getBlockNumber();
-  console.log('📦 Starting from block:', lastBlock);
-  console.log('✅ Oracle running! Polling every 12 seconds...\n');
-
-  // Poll every 12 seconds (Base Sepolia block time)
-  setInterval(pollDeposits, 12000);
 }
 
 async function pollDeposits() {
@@ -111,4 +118,16 @@ process.on('SIGTERM', () => {
   process.exit(0);
 });
 
-init().catch(console.error);
+// Keep alive
+process.on('uncaughtException', (error) => {
+  console.error('💥 UNCAUGHT EXCEPTION:', error);
+});
+
+process.on('unhandledRejection', (error) => {
+  console.error('💥 UNHANDLED REJECTION:', error);
+});
+
+init().catch(error => {
+  console.error('💥 FATAL ERROR:', error);
+  process.exit(1);
+});
